@@ -1,17 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     const socket = io('/average-game');
 
-    // 글로벌 변수
     let myRoomCode = '';
     let myPlayerId = '';
     let myProfileImageSrc = document.getElementById('lobby-profile-preview').src;
     let currentGameState = null;
     let isHistoryView = false;
     
-    // 이벤트 위임 (Event Delegation)을 사용한 통합 이벤트 핸들러
     document.addEventListener('click', (event) => {
         const target = event.target;
-
         if (target.id === 'lobby-profile-preview') document.getElementById('lobby-profile-input').click();
         if (target.id === 'create-room-btn') handleCreateRoom();
         if (target.id === 'join-room-btn') handleJoinRoom();
@@ -121,13 +118,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Socket Event Handlers
     socket.on('connect', () => { myPlayerId = socket.id; });
     socket.on('roomCreated', onRoomJoined);
     socket.on('roomJoined', onRoomJoined);
     socket.on('playerJoined', ({ playerName }) => showToast(`${playerName} 님이 입장했습니다.`, 'join'));
     socket.on('playerLeft', ({ playerName }) => showToast(`${playerName} 님이 퇴장했습니다.`, 'leave'));
-    socket.on('error', ({ message }) => { alert(message); });
+    socket.on('error', ({ message }) => alert(message));
     socket.on('newHost', ({ playerName }) => showToast(`${playerName} 님이 새로운 방장이 되었습니다.`, 'info'));
     socket.on('updateGameState', (gameState) => {
         if (!gameState) return;
@@ -146,14 +142,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('game-container').classList.remove('hidden');
     }
 
-    // 렌더링 함수들
     function renderGame(gameState) {
         const players = Object.values(gameState.players);
         const me = players.find(p => p.id === myPlayerId);
         if (!me) return;
         
         const amIHost = me.isHost;
-        document.getElementById('player-count-display').textContent = `접속 인원: ${players.length} / ${gameState.maxPlayers}`;
+        document.getElementById('player-count-display').textContent = `참가 인원: ${players.length} / 12`;
         document.getElementById('main-game-area').classList.remove('hidden');
         document.getElementById('results').classList.add('hidden');
         document.getElementById('question-container').classList.remove('hidden');
@@ -169,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (amIHost) {
             confirmQuestionBtn.classList.remove('hidden');
-            confirmQuestionBtn.id = 'confirm-question-btn'; // ID를 명시적으로 유지
             questionInput.disabled = isQuestionConfirmed;
             confirmQuestionBtn.textContent = isQuestionConfirmed ? '질문 수정' : '질문 확정';
             confirmQuestionBtn.className = 'confirm-question-btn ' + (isQuestionConfirmed ? 'edit-mode' : 'confirm-mode');
@@ -185,17 +179,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderSidePanel(gameState);
         
-        // [수정됨] 결과 보기 버튼 활성화/비활성화 로직 변경
-        document.getElementById('view-results-button').disabled = !players.some(p => p.submitted);
+        const allSubmitted = players.length > 0 && players.every(p => p.submitted);
+        document.getElementById('view-results-button').disabled = !allSubmitted;
     }
     
     function createPlayerCard(player, isMe) {
         const card = document.createElement('div');
-        card.className = 'player-card';
+        card.className = `player-card ${player.submitted ? 'submitted' : ''}`;
         card.dataset.playerId = player.id;
         card.style.borderColor = player.color;
         card.style.setProperty('--tint-color', `${player.color}20`);
-        card.classList.toggle('submitted', player.submitted);
         const textColor = (player.color === '#fff176') ? '#000000' : '#ffffff';
         const actionHtml = isMe ?
             `<div class="input-area">

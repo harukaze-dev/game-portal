@@ -1,25 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     const socket = io('/minority-game');
 
-    // 글로벌 변수
     let myRoomCode = '';
     let myPlayerId = '';
     let myProfileImageSrc = document.getElementById('lobby-profile-preview').src;
     let currentGameState = null;
     let isHistoryView = false;
 
-    // =================================================================
-    // 이벤트 위임 (Event Delegation)을 사용한 통합 이벤트 핸들러
-    // =================================================================
     document.addEventListener('click', (event) => {
         const target = event.target;
 
-        // 로비 버튼
         if (target.id === 'lobby-profile-preview') document.getElementById('lobby-profile-input').click();
         if (target.id === 'create-room-btn') handleCreateRoom();
         if (target.id === 'join-room-btn') handleJoinRoom();
-
-        // 게임 내 버튼
         if (target.id === 'copy-code-btn') handleCopyCode();
         if (target.id === 'confirm-options-btn') handleConfirmOptions(target);
         if (target.id === 'view-results-button') socket.emit('viewResults', { roomCode: myRoomCode });
@@ -27,11 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (target.id === 'toggle-history-btn') handleToggleHistory();
         if (target.id === 'back-to-game-btn') renderGame(currentGameState);
 
-        // 플레이어 선택 버튼
         const choiceButton = target.closest('.btn-choice');
         if (choiceButton) handleSubmitChoice(choiceButton);
 
-        // 과거 기록 리스트 아이템
         const historyItem = target.closest('li[data-history-index]');
         if (historyItem) handleShowPastResults(historyItem);
     });
@@ -43,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('lobby-profile-input').addEventListener('change', handleProfileImageChange);
 
-    // 핸들러 함수들
     function handleProfileImageChange(event) {
         const file = event.target.files[0];
         if (file) {
@@ -74,12 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleConfirmOptions(button) {
+        const optionAInput = document.getElementById('optionA-input');
+        const optionBInput = document.getElementById('optionB-input');
         const isEditing = button.classList.contains('edit-mode');
+        
         if (isEditing) {
             socket.emit('updateOptions', { roomCode: myRoomCode, optionA: '', optionB: '' });
         } else {
-            const optionA = document.getElementById('optionA-input').value.trim();
-            const optionB = document.getElementById('optionB-input').value.trim();
+            const optionA = optionAInput.value.trim();
+            const optionB = optionBInput.value.trim();
             if (!optionA || !optionB) return alert('두 선택지를 모두 입력해주세요.');
             socket.emit('updateOptions', { roomCode: myRoomCode, optionA, optionB });
         }
@@ -105,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Socket Event Handlers
     socket.on('connect', () => { myPlayerId = socket.id; });
     socket.on('roomCreated', onRoomJoined);
     socket.on('roomJoined', onRoomJoined);
@@ -130,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('game-container').classList.remove('hidden');
     }
 
-    // 렌더링 함수들
     function renderGame(gameState) {
         const players = Object.values(gameState.players);
         const me = players.find(p => p.id === myPlayerId);
@@ -156,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (amIHost) {
             confirmOptionsBtn.classList.remove('hidden');
+            confirmOptionsBtn.id = 'confirm-options-btn';
             optionAInput.disabled = areOptionsConfirmed;
             optionBInput.disabled = areOptionsConfirmed;
             confirmOptionsBtn.textContent = areOptionsConfirmed ? '주제 수정' : '주제 확정';
@@ -176,38 +168,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createPlayerCard(player, isMe, gameState) {
         const card = document.createElement('div');
-        card.className = 'player-card';
+        card.className = `player-card ${player.submitted ? 'submitted' : ''}`;
         card.dataset.playerId = player.id;
         card.style.borderColor = player.color;
         card.style.setProperty('--tint-color', `${player.color}20`);
-        card.classList.toggle('submitted', player.submitted);
         
-        const playerInfoHtml = `<div class="player-info-text"><div class="player-name">${player.name}</div></div>`;
         let actionHtml = '';
         const areOptionsSet = gameState.optionA && gameState.optionB;
 
         if (isMe) {
-            if (areOptionsSet && !player.submitted) {
-                actionHtml = `<div class="player-action-area">
-                    <button class="btn-choice option-a" data-choice="A">${gameState.optionA}</button>
-                    <button class="btn-choice option-b" data-choice="B">${gameState.optionB}</button>
-                </div>`;
-            } else if (player.submitted) {
+            if (player.submitted) {
                 const choiceText = player.choice === 'A' ? gameState.optionA : gameState.optionB;
                 actionHtml = `<div class="player-action-area">
                     <div class="player-choice-display" style="background-color: var(--option${player.choice}-color); color: white;">'${choiceText}' 선택함</div>
                     <button class="btn-choice cancel" data-choice="cancel">취소</button>
                 </div>`;
+            } else if (areOptionsSet) {
+                actionHtml = `<div class="player-action-area">
+                    <button class="btn-choice option-a" data-choice="A">${gameState.optionA}</button>
+                    <button class="btn-choice option-b" data-choice="B">${gameState.optionB}</button>
+                </div>`;
             } else {
                 actionHtml = `<div class="player-status-display">주제 선정 대기중...</div>`;
             }
         } else {
-            actionHtml = `<div class="player-status-display">${!areOptionsSet ? '주제 선정 대기중...' : (player.submitted ? '선택 완료!' : '선택 대기중...')}</div>`;
+            actionHtml = `<div class="player-status-display">${player.submitted ? '선택 완료!' : '선택 대기중...'}</div>`;
         }
         
         card.innerHTML = `
             <div class="profile-section"><img src="${player.imageSrc}" class="profile-image-preview" alt="${player.name} profile"></div>
-            <div class="content-section">${playerInfoHtml}${actionHtml}</div>`;
+            <div class="content-section"><div class="player-info-text"><div class="player-name">${player.name}</div></div>${actionHtml}</div>`;
         return card;
     }
 
