@@ -3,7 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
 
-const wordMafiaTopics = require('./public/03.word-mafia/word-mafia-data.js'); 
+const wordMafiaTopics = require('./public/03.word-mafia/word-mafia-data.js');
 
 const app = express();
 const server = http.createServer(app);
@@ -11,6 +11,17 @@ const io = socketIo(server);
 
 // 'public' 폴더를 정적 파일 제공 폴더로 설정
 app.use(express.static(path.join(__dirname, 'public')));
+
+// --- [변경됨] 모든 게임에서 공통으로 사용할 함수 ---
+/**
+ * 지정된 길이의 무작위 방 코드를 생성합니다.
+ * @param {number} length - 생성할 코드의 길이 (기본값: 8)
+ * @returns {string} - 대문자 영숫자로 구성된 방 코드
+ */
+function generateRoomCode(length = 8) {
+    return Math.random().toString(36).substring(2, 2 + length).toUpperCase();
+}
+// -------------------------------------------
 
 // 각 게임 페이지 라우팅
 app.get('/01.average-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'average-game', 'index.html')); });
@@ -28,11 +39,11 @@ averageGameNsp.on('connection', (socket) => {
     const PLAYER_COLORS = ['#e57373', '#ffb74d', '#fff176', '#81c784', '#4dd0e1', '#64b5f6', '#7986cb', '#ba68c8'];
     const MAX_PLAYERS = 12;
 
-    function generateRoomCode() { return Math.random().toString(36).substring(2, 6).toUpperCase(); }
+    // [제거됨] 중복되던 generateRoomCode 함수 제거
     function getGameState(roomCode) { return averageGameRooms[roomCode] || null; }
 
     socket.on('createRoom', ({ playerName, profileImageSrc }) => {
-        const roomCode = generateRoomCode();
+        const roomCode = generateRoomCode(); // [변경됨] 공통 함수를 호출하여 8자리 코드 생성
         averageGameRooms[roomCode] = { players: {}, question: '', state: 'waiting', maxPlayers: MAX_PLAYERS, history: [] };
         socket.join(roomCode);
         averageGameRooms[roomCode].players[socket.id] = { id: socket.id, name: playerName, color: PLAYER_COLORS[0], imageSrc: profileImageSrc, value: null, submitted: false, isHost: true, cumulativeScore: 0 };
@@ -85,18 +96,18 @@ averageGameNsp.on('connection', (socket) => {
 
             const total = submittedPlayers.reduce((sum, p) => sum + p.value, 0);
             const average = total / submittedPlayers.length;
-            
+
             submittedPlayers.forEach(p => {
                 p.diff = Math.abs(p.value - average);
                 p.diffRatio = (average > 0) ? (p.diff / average) * 100 : (p.value === 0 ? 0 : 100);
             });
-            
-            players.forEach(p => { 
+
+            players.forEach(p => {
                 if (p.submitted && p.value !== null) {
                      const diff = Math.abs(p.value - average);
                      const diffRatio = (average > 0) ? (diff / average) * 100 : (p.value === 0 ? 0 : 100);
                      p.cumulativeScore += diffRatio;
-                } 
+                }
             });
 
             const roundResult = { question: room.question, average: average, players: JSON.parse(JSON.stringify(submittedPlayers)), timestamp: Date.now() };
@@ -157,11 +168,11 @@ minorityGameNsp.on('connection', (socket) => {
     console.log(`[소수결 게임] 유저 접속: ${socket.id}`);
     const PLAYER_COLORS = ['#e57373', '#ffb74d', '#fff176', '#81c784', '#4dd0e1', '#64b5f6', '#7986cb', '#ba68c8'];
     const MAX_PLAYERS = 12;
-    function generateRoomCode() { return Math.random().toString(36).substring(2, 6).toUpperCase(); }
+    // [제거됨] 중복되던 generateRoomCode 함수 제거
     function getGameState(roomCode) { return minorityGameRooms[roomCode] || null; }
 
     socket.on('createRoom', ({ playerName, profileImageSrc }) => {
-        const roomCode = generateRoomCode();
+        const roomCode = generateRoomCode(); // [변경됨] 공통 함수를 호출하여 8자리 코드 생성
         minorityGameRooms[roomCode] = { players: {}, optionA: '', optionB: '', state: 'waiting', maxPlayers: MAX_PLAYERS, history: [] };
         socket.join(roomCode);
         minorityGameRooms[roomCode].players[socket.id] = { id: socket.id, name: playerName, color: PLAYER_COLORS[0], imageSrc: profileImageSrc, choice: null, submitted: false, isHost: true, cumulativeScore: 0 };
@@ -288,12 +299,11 @@ wordMafiaNsp.on('connection', (socket) => {
     const PLAYER_COLORS = ['#e57373', '#ffb74d', '#fff176', '#81c784', '#4dd0e1', '#64b5f6', '#7986cb', '#ba68c8'];
     const MAX_PLAYERS = 12;
 
-    function generateRoomCode() { return Math.random().toString(36).substring(2, 6).toUpperCase(); }
+    // [제거됨] 중복되던 generateRoomCode 함수 제거
     function getGameState(roomCode) { return wordMafiaRooms[roomCode] || null; }
 
     function resetGame(room) {
         room.state = 'waiting';
-        // room.mainTopic = ''; // [수정됨] 대분류 제거
         room.citizenWord = '';
         room.mafiaWord = '';
         room.mafiaId = null;
@@ -313,7 +323,7 @@ wordMafiaNsp.on('connection', (socket) => {
     }
 
     socket.on('createRoom', ({ playerName, profileImageSrc }) => {
-        const roomCode = generateRoomCode();
+        const roomCode = generateRoomCode(); // [변경됨] 공통 함수를 호출하여 8자리 코드 생성
         wordMafiaRooms[roomCode] = { players: {}, maxPlayers: MAX_PLAYERS };
         resetGame(wordMafiaRooms[roomCode]);
         socket.join(roomCode);
@@ -326,7 +336,7 @@ wordMafiaNsp.on('connection', (socket) => {
         const room = wordMafiaRooms[roomCode];
         if (!room) return socket.emit('error', { message: '해당하는 방이 없습니다.' });
         if (Object.keys(room.players).length >= MAX_PLAYERS) return socket.emit('error', { message: '방이 가득 찼습니다.' });
-        
+
         if (room.state !== 'waiting') {
             return socket.emit('error', { message: '이미 게임이 시작되어 참여할 수 없습니다.' });
         }
@@ -339,7 +349,7 @@ wordMafiaNsp.on('connection', (socket) => {
         socket.to(roomCode).emit('playerJoined', { playerName });
         wordMafiaNsp.to(roomCode).emit('updateGameState', getGameState(roomCode));
     });
-    
+
     socket.on('startGame', ({ roomCode }) => {
         const room = wordMafiaRooms[roomCode];
         if (!room || !room.players[socket.id]?.isHost) return;
@@ -348,22 +358,11 @@ wordMafiaNsp.on('connection', (socket) => {
 
         room.participants = players.map(p => p.id);
 
-        // --- [수정됨] 여기가 핵심 변경 사항입니다 ---
-
-        // 1. wordMafiaTopics에서 주제어 세트(배열)를 무작위로 하나 선택합니다.
-        //    이 세트에는 2개 이상의 단어가 들어있을 수 있습니다. (e.g., ['강아지', '고양이', '햄스터'])
         const randomWordSet = wordMafiaTopics[Math.floor(Math.random() * wordMafiaTopics.length)];
-
-        // 2. 선택된 단어 세트의 순서를 무작위로 섞습니다.
-        //    예: ['강아지', '고양이', '햄스터'] -> ['고양이', '햄스터', '강아지']
         const shuffledWords = [...randomWordSet].sort(() => Math.random() - 0.5);
 
-        // 3. 섞인 배열에서 앞의 두 단어를 시민과 마피아에게 각각 할당합니다.
-        //    이렇게 하면 3개 이상의 단어 세트에서도 무작위로 2개의 단어가 선택됩니다.
-        //    예: 시민 = '고양이', 마피아 = '햄스터'
         room.citizenWord = shuffledWords[0];
         room.mafiaWord = shuffledWords[1];
-        // ------------------------------------
 
         const mafiaIndex = Math.floor(Math.random() * players.length);
         room.mafiaId = players[mafiaIndex].id;
@@ -382,7 +381,7 @@ wordMafiaNsp.on('connection', (socket) => {
     socket.on('revealVotes', ({ roomCode }) => {
         const room = wordMafiaRooms[roomCode];
         if (!room || !room.players[socket.id]?.isHost) return;
-        
+
         const livingParticipants = Object.values(room.players).filter(p => room.participants.includes(p.id) && !p.isDead);
         const allVoted = livingParticipants.every(p => p.votedFor !== null);
         if (!allVoted) return;
@@ -392,7 +391,7 @@ wordMafiaNsp.on('connection', (socket) => {
             const voteTarget = p.votedFor;
             if (voteTarget) room.votes[voteTarget] = (room.votes[voteTarget] || 0) + 1;
         });
-        
+
         let maxVotes = 0;
         let votedOutPlayerId = null;
         let tie = false;
@@ -420,20 +419,20 @@ wordMafiaNsp.on('connection', (socket) => {
         }
         wordMafiaNsp.to(roomCode).emit('updateGameState', getGameState(roomCode));
     });
-    
+
     socket.on('vote', ({ roomCode, targetId }) => {
         const room = wordMafiaRooms[roomCode];
         if (!room || !room.players[socket.id] || !room.participants.includes(socket.id) || room.players[socket.id].isDead) {
             return;
         }
-        
+
         const voter = room.players[socket.id];
         voter.votedFor = targetId;
         voter.submitted = (targetId !== null);
-        
+
         wordMafiaNsp.to(roomCode).emit('updateGameState', getGameState(roomCode));
     });
-    
+
     socket.on('finalGuess', ({ roomCode, guessWord }) => {
         const room = wordMafiaRooms[roomCode];
         if (!room || !room.players[socket.id] || !room.players[socket.id].isMafia) return;
@@ -441,7 +440,7 @@ wordMafiaNsp.on('connection', (socket) => {
         let winner = (guessWord.trim().toLowerCase() === room.citizenWord.toLowerCase()) ? 'mafia' : 'citizen';
         room.state = 'result';
         room.roundResult = { winner, votedOutPlayerId: room.votedOutPlayerId, finalGuess: guessWord };
-        
+
         Object.values(room.players).forEach(p => {
             if ((winner === 'citizen' && !p.isMafia) || (winner === 'mafia' && p.isMafia)) p.cumulativeScore += 1;
         });

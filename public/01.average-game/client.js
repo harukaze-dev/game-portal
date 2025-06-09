@@ -281,24 +281,54 @@ document.addEventListener('DOMContentLoaded', () => {
     function formatNumber(num) {
         return Number.isInteger(num) ? num : num.toFixed(1);
     }
-
+    
+    // ▼▼▼▼▼ 여기가 수정된 함수입니다 ▼▼▼▼▼
     function renderResultsHtml(players, average) {
         players.sort((a, b) => a.diff - b.diff);
-        const maxDiffRatio = Math.max(...players.map(p => p.diffRatio), 1);
+        const maxDiff = Math.max(...players.map(p => p.diff), 1);
         let rank = 1;
+
         return players.map((p, i) => {
             if (i > 0 && players[i].diff > players[i-1].diff) rank = i + 1;
             const isWinner = rank === 1;
-            const barWidth = (p.diffRatio / maxDiffRatio) * 100;
+            const barWidth = (p.diff / maxDiff) * 100;
+            
+            const realDiff = parseFloat((p.value - average).toFixed(1));
+            const diffText = realDiff > 0 ? `+${realDiff}` : `${realDiff}`;
+            
+            let diffClass = '';
+            if (realDiff > 0) {
+                diffClass = 'diff-positive';
+            } else if (realDiff < 0) {
+                diffClass = 'diff-negative';
+            } else {
+                diffClass = 'diff-zero';
+            }
+
+            // [수정] 차이값과 비율을 .diff-group으로 한번 더 감쌌습니다.
             return `<li class="${isWinner ? 'winner' : ''}">
-                <div class="player-info"><span class="rank-display">${isWinner ? '👑' : `${rank}위`}</span>
-                <img src="${p.imageSrc}" class="profile-image-result" alt="${p.name} profile">
-                <span>${p.name}</span></div>
-                <div class="result-details"><span class="submitted-value">입력: <b>${p.value}</b></span>
-                <span class="diff-value">(차이: ${formatNumber(p.diff)}, 비율: ${p.diffRatio.toFixed(1)}%)</span>
-                <div class="diff-bar-wrapper"><div class="diff-bar" style="width: ${barWidth}%; background-color: ${p.color};"></div></div></div></li>`;
+                <div class="player-info">
+                    <span class="rank-display">${isWinner ? '👑' : `${rank}위`}</span>
+                    <img src="${p.imageSrc}" class="profile-image-result" alt="${p.name} profile">
+                    <span>${p.name}</span>
+                </div>
+                <div class="result-details">
+                    <div class="result-text-group">
+                        <span class="submitted-value"><b>${p.value}</b></span>
+                        <div class="diff-group">
+                            <span class="diff-value ${diffClass}">${diffText}</span>
+                            <span class="diff-ratio">${p.diffRatio.toFixed(0)}%</span>
+                        </div>
+                    </div>
+                    <div class="diff-bar-wrapper">
+                        <div class="diff-bar" style="width: ${barWidth}%; background-color: ${p.color};"></div>
+                    </div>
+                </div>
+            </li>`;
+            
         }).join('');
     }
+    // ▲▲▲▲▲ 여기가 수정된 함수입니다 ▲▲▲▲▲
 
     function showToast(message, type = 'info') {
         const toastContainer = document.getElementById('toast-container');

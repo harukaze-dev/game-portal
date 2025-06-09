@@ -1,12 +1,15 @@
 /*
 ===================================================================
-평균값 게임 - 고유 스타일
+평균값 게임 - 고유 스타일 (구조 재설계 최종본)
 ===================================================================
 */
 
 :root {
     --primary-color: #3f51b5;
     --accent-color: #FFC107;
+    --positive-color: #1e88e5; /* 파란색 */
+    --negative-color: #e53935; /* 빨간색 */
+    --zero-color: #43a047;     /* 초록색 (0일 때) */
 }
 
 /* --- 질문 입력 --- */
@@ -61,8 +64,6 @@
     border-radius: 8px 0 0 8px;
     background-color: #f9f9f9;
     color: var(--dark-text);
-    /* [수정 1] 입력칸이 너무 커지지 않도록 최대 너비 설정 */
-    max-width: 200px; 
 }
 .btn-submit {
     flex-shrink: 0;
@@ -82,14 +83,80 @@
 #result-summary { flex: 3; }
 .average-value { text-align: center; font-size: 1.5rem; font-weight: bold; margin: 1rem 0 1.5rem 0; }
 #ranking-list { list-style-type: none; padding: 0; }
-#ranking-list li { background: #f9f9f9; margin-bottom: 1rem; padding: 0.8rem 1.5rem; border-radius: 12px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; flex-wrap: wrap; }
+
+#ranking-list li {
+    background: #f9f9f9;
+    margin-bottom: 1rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
 #ranking-list li.winner { transform: scale(1.05); font-weight: bold; background: linear-gradient(135deg, #fffde7, #fff3e0); border: 2px solid var(--accent-color); box-shadow: 0 0 20px rgba(255, 193, 7, 0.6); }
-.rank-display { font-size: 1.8rem; width: 50px; text-align: center; }
+
 .profile-image-result { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid white; }
-.result-details { display: flex; align-items: center; gap: 1rem; flex-grow: 1; justify-content: flex-end; }
-.submitted-value { min-width: 90px; }
-.diff-value { font-size: 0.9rem; min-width: 170px; text-align: left; }
-.diff-bar-wrapper { flex-basis: 150px; height: 16px; background-color: #e0e0e0; border-radius: 8px; }
+.rank-display { font-size: 1.8rem; flex-shrink: 0; }
+.player-info { display: flex; align-items: center; gap: 0.8rem; }
+
+.player-info > span {
+    font-size: 1.8rem;
+    font-weight: 500;
+}
+
+.result-details {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* ▼▼▼▼▼ 여기가 핵심 수정 영역입니다 ▼▼▼▼▼ */
+.result-text-group {
+    display: flex;
+    flex-direction: column; /* PC에서는 세로로 쌓음 */
+    align-items: flex-start;
+}
+
+.diff-group {
+    display: flex;
+    align-items: baseline; /* 폰트 크기가 다른 텍스트의 아래 라인을 맞춤 */
+    gap: 0.5rem;
+}
+/* ▲▲▲▲▲ 여기가 핵심 수정 영역입니다 ▲▲▲▲▲ */
+
+
+.submitted-value,
+.diff-value,
+.diff-ratio {
+    white-space: nowrap;
+}
+
+.submitted-value b { font-size: 1.2rem; }
+
+.diff-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.diff-ratio {
+    font-size: 1.2rem;
+    color: #555;
+    font-weight: 400;
+}
+
+.diff-value.diff-positive { color: var(--positive-color); }
+.diff-value.diff-negative { color: var(--negative-color); }
+.diff-value.diff-zero { color: var(--zero-color); }
+
+.diff-bar-wrapper {
+    height: 16px;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    width: 250px;
+}
+
 .diff-bar { height: 100%; border-radius: 8px; }
 
 /*
@@ -98,54 +165,33 @@
  * ===================================================================
  */
 @media (max-width: 768px) {
-    /* --- 질문 입력 --- */
-    .question-input-wrapper { flex-direction: column; gap: 0.5rem; }
-    #question-input {
-        font-size: 1.2rem;
-        padding: 0.8rem;
-    }
-    .confirm-question-btn {
-        width: 100%;
-        padding: 0.8rem;
-        font-size: 1rem;
-    }
-
-    /* --- 숫자 입력 --- */
-    .input-area {
-        justify-content: flex-start;
-        width: 100%;
-        grid-column: 1 / -1; /* [수정 1] 이름 아래 전체 영역을 차지하도록 설정 */
-    }
-    .number-input {
-        font-size: 1.5rem;
-        padding: 0.5rem;
-    }
-    .btn-submit {
-        padding: 0 1rem;
-        font-size: 1rem;
-    }
+    #ranking-list li { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .profile-image-result { width: 50px; height: 50px; }
     
-    /* --- 결과 화면 --- */
-    #ranking-list li {
-        padding: 0.8rem;
+    .result-details {
+        margin-left: 0;
         flex-direction: column;
         align-items: flex-start;
+        width: 100%;
         gap: 0.5rem;
     }
-    .profile-image-result {
-        width: 50px;
-        height: 50px;
-    }
-    .result-details {
-        flex-direction: column;
-        align-items: flex-start;
-        width: 100%;
-        gap: 0.3rem;
-    }
-    .diff-value {
-        min-width: unset;
-    }
-    .diff-bar-wrapper {
+
+    /* ▼▼▼▼▼ 여기가 모바일 핵심 수정 영역입니다 ▼▼▼▼▼ */
+    .result-text-group {
+        flex-direction: row; /* 모바일에서는 가로로 정렬 */
+        justify-content: space-between; /* 양 끝으로 분산 */
+        align-items: baseline;
         width: 100%;
     }
+    
+    .diff-group {
+        justify-content: flex-end; /* 차이+비율 그룹을 오른쪽으로 보냄 */
+    }
+    /* ▲▲▲▲▲ 여기가 모바일 핵심 수정 영역입니다 ▲▲▲▲▲ */
+
+    .player-info > span { font-size: 1rem; }
+    .diff-value { min-width: unset; font-size: 1.1rem; }
+    .diff-ratio { font-size: 1rem; }
+    
+    .diff-bar-wrapper { width: 100%; height: 12px; }
 }
