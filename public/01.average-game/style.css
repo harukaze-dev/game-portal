@@ -1,17 +1,12 @@
 /*
- * ===================================================================
- *  평균값 게임 - 고유 스타일
- * ===================================================================
- */
+===================================================================
+평균값 게임 - 고유 스타일
+===================================================================
+*/
 
 :root {
     --primary-color: #3f51b5;
     --accent-color: #FFC107;
-}
-
-/* --- 상단 게임 제목 --- */
-.top-bar-title {
-    font-size: 3.0rem; /* 평균값 게임 제목은 길어서 조금 작게 */
 }
 
 /* --- 질문 입력 --- */
@@ -30,6 +25,7 @@
     box-sizing: border-box;
     text-align: center;
     transition: background-color 0.2s, border-color 0.2s;
+    min-width: 0;
 }
 #question-input:disabled { background-color: rgba(0,0,0,0.02); color: #555; }
 #question-input.confirmed-question { background-color: #fffde7; border-color: var(--accent-color); }
@@ -48,9 +44,13 @@
 .confirm-question-btn.confirm-mode { background-color: var(--mint-color); color: white; }
 .confirm-question-btn.edit-mode { background-color: var(--accent-color); color: var(--dark-text); }
 
-
 /* --- 플레이어 카드 내 숫자 입력 --- */
-.input-area { grid-column: 2 / 3; display: flex; margin-left: auto; align-items: stretch; justify-content: flex-end; }
+.input-area {
+    grid-column: 2 / -1;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+}
 .number-input {
     width: 60%;
     padding: 0.9rem 1rem;
@@ -61,6 +61,8 @@
     border-radius: 8px 0 0 8px;
     background-color: #f9f9f9;
     color: var(--dark-text);
+    /* [수정 1] 입력칸이 너무 커지지 않도록 최대 너비 설정 */
+    max-width: 200px; 
 }
 .btn-submit {
     flex-shrink: 0;
@@ -77,10 +79,10 @@
 #ranking-board .score { font-size: 1rem; color: #555; }
 
 /* --- 결과 화면 --- */
-#result-summary { flex: 3; } /* 평균값 게임 결과창은 너비를 더 넓게 */
+#result-summary { flex: 3; }
 .average-value { text-align: center; font-size: 1.5rem; font-weight: bold; margin: 1rem 0 1.5rem 0; }
 #ranking-list { list-style-type: none; padding: 0; }
-#ranking-list li { background: #f9f9f9; margin-bottom: 1rem; padding: 0.8rem 1.5rem; border-radius: 12px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; }
+#ranking-list li { background: #f9f9f9; margin-bottom: 1rem; padding: 0.8rem 1.5rem; border-radius: 12px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; flex-wrap: wrap; }
 #ranking-list li.winner { transform: scale(1.05); font-weight: bold; background: linear-gradient(135deg, #fffde7, #fff3e0); border: 2px solid var(--accent-color); box-shadow: 0 0 20px rgba(255, 193, 7, 0.6); }
 .rank-display { font-size: 1.8rem; width: 50px; text-align: center; }
 .profile-image-result { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid white; }
@@ -89,3 +91,61 @@
 .diff-value { font-size: 0.9rem; min-width: 170px; text-align: left; }
 .diff-bar-wrapper { flex-basis: 150px; height: 16px; background-color: #e0e0e0; border-radius: 8px; }
 .diff-bar { height: 100%; border-radius: 8px; }
+
+/*
+ * ===================================================================
+ *  평균값 게임 - 모바일 반응형 스타일
+ * ===================================================================
+ */
+@media (max-width: 768px) {
+    /* --- 질문 입력 --- */
+    .question-input-wrapper { flex-direction: column; gap: 0.5rem; }
+    #question-input {
+        font-size: 1.2rem;
+        padding: 0.8rem;
+    }
+    .confirm-question-btn {
+        width: 100%;
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
+
+    /* --- 숫자 입력 --- */
+    .input-area {
+        justify-content: flex-start;
+        width: 100%;
+        grid-column: 1 / -1; /* [수정 1] 이름 아래 전체 영역을 차지하도록 설정 */
+    }
+    .number-input {
+        font-size: 1.5rem;
+        padding: 0.5rem;
+    }
+    .btn-submit {
+        padding: 0 1rem;
+        font-size: 1rem;
+    }
+    
+    /* --- 결과 화면 --- */
+    #ranking-list li {
+        padding: 0.8rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .profile-image-result {
+        width: 50px;
+        height: 50px;
+    }
+    .result-details {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        gap: 0.3rem;
+    }
+    .diff-value {
+        min-width: unset;
+    }
+    .diff-bar-wrapper {
+        width: 100%;
+    }
+}

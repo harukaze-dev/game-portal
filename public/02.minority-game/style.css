@@ -24,6 +24,7 @@
     box-sizing: border-box;
     text-align: center;
     transition: background-color 0.2s, border-color 0.2s;
+    min-width: 0;
 }
 #optionA-input:focus { border-color: var(--optionA-color); }
 #optionB-input:focus { border-color: var(--optionB-color); }
@@ -47,7 +48,14 @@
 
 
 /* --- 플레이어 카드 내 선택지 버튼 --- */
-.player-action-area { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; }
+.player-action-area { 
+    /* 데스크톱 전용 스타일 */
+    grid-column: 2 / -1; 
+    display: flex; 
+    justify-content: flex-end; 
+    align-items: center; 
+    gap: 1rem; 
+}
 .btn-choice { padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; color: white; transition: transform 0.2s; }
 .btn-choice:hover { transform: scale(1.05); }
 .btn-choice.option-a { background-color: var(--optionA-color); }
@@ -65,3 +73,62 @@
 #player-choices-list li { background: #f9f9f9; margin-bottom: 1rem; padding: 0.8rem 1.5rem; border-radius: 12px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; }
 #player-choices-list li.winner { transform: scale(1.05); font-weight: bold; background: linear-gradient(135deg, #fffde7, #fff3e0); border: 2px solid var(--accent-color); box-shadow: 0 0 20px rgba(255, 193, 7, 0.6); }
 .player-choice-result { font-size: 1.2rem; font-weight: bold; padding: 0.5rem 1rem; border-radius: 8px; color: white; }
+
+
+/*
+ * ===================================================================
+ *  소수결 게임 - 모바일 & 태블릿 반응형 스타일
+ * ===================================================================
+ */
+@media (max-width: 992px) {
+    /* --- 선택지 입력 --- */
+    .options-input-wrapper {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    #optionA-input, #optionB-input {
+        font-size: 1.1rem;
+        padding: 0.8rem;
+    }
+    .vs-divider {
+        font-size: 1.5rem;
+    }
+    .confirm-options-btn {
+        width: 100%;
+        padding: 0.8rem;
+    }
+
+    /* --- 플레이어 카드 내 선택지 버튼 --- */
+    .player-action-area {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    .btn-choice {
+        padding: 0.8rem 1rem;
+        font-size: 1rem;
+    }
+    .player-choice-display {
+        font-size: 1.1rem;
+        text-align: center;
+        padding: 0.8rem;
+    }
+
+    /* --- 결과 화면 --- */
+    .vote-counts {
+        font-size: 2rem;
+    }
+    .winner-announcement {
+        font-size: 1.2rem;
+    }
+    #player-choices-list li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+    }
+    .player-choice-result {
+        width: 100%;
+        text-align: center;
+    }
+}

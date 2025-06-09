@@ -1,5 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
 
+/* 
+ * ===================================================================
+ *  [핵심 해결책] 전역 box-sizing 설정
+ *  이 코드는 모든 요소의 너비(width)를 계산할 때, 
+ *  테두리(border)와 안쪽 여백(padding)을 너비에 포함시키라고 지시합니다.
+ * ===================================================================
+ */
+html {
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
 body {
     font-family: 'Noto Sans KR', sans-serif;
     background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
@@ -8,6 +22,8 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
+    /* 모바일 화면에서 좌우 여백이 없어 벽에 붙는 현상을 막기 위해 추가 */
+    padding: 1rem;
 }
 
 .main-container {
@@ -16,6 +32,8 @@ body {
     padding: 3rem 4rem;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 900px;
 }
 
 h1 {
@@ -23,7 +41,7 @@ h1 {
     margin-bottom: 0.5rem;
 }
 
-p {
+.main-container > p {
     color: #666;
     font-size: 1.1rem;
     margin-bottom: 2.5rem;
@@ -44,6 +62,7 @@ p {
     text-decoration: none;
     color: inherit;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    flex-shrink: 0; 
 }
 
 .game-card:hover {
@@ -61,4 +80,36 @@ p {
     line-height: 1.5;
     color: #555;
     margin-bottom: 0;
+}
+
+
+/* 
+ * ===================================================================
+ *  모바일 반응형 스타일
+ * ===================================================================
+ */
+@media (max-width: 850px) {
+    .main-container {
+        padding: 2rem 1.5rem;
+    }
+
+    .game-selection {
+        flex-direction: column;
+        align-items: center; 
+        gap: 1.5rem;
+    }
+
+    .game-card {
+        /* box-sizing이 적용되었기 때문에, 이제 이 코드는 완벽하게 작동합니다. */
+        width: 100%;
+        max-width: 400px; 
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .main-container > p {
+        font-size: 1rem;
+    }
 }
