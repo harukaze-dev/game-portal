@@ -5,7 +5,8 @@ const games = [
     { name: 'XX평', path: '/01.average-game' },
     { name: '소수결 게임', path: '/02.minority-game' },
     { name: '워드 마피아', path: '/03.word-mafia' },
-    { name: '순발력 게임', path: '/04.grid-game' }
+    { name: '순발력 게임', path: '/04.grid-game' },
+    { name: 'LED 게임', path: '/05.led-game' } // [추가] LED 게임
 ];
 
 const currentPagePath = window.location.pathname;

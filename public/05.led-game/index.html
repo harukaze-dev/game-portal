@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>순발력 게임</title>
+    <title>LED 게임</title>
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="in-lobby">
     <div id="toast-container"></div>
     <div id="app-wrapper">
-        <div id="turn-indicator-popup" class="turn-indicator-popup"></div>
 
         <div id="lobby-container" class="lobby-container">
-            <h1>순발력 게임</h1>
+            <h1>LED 게임</h1>
             <div class="lobby-step">
                 <h2>닉네임 & 프로필 설정</h2>
                 <div class="lobby-profile-container">
@@ -42,16 +41,10 @@
                     <div id="player-count-display" class="info-box"></div>
                     <button id="copy-code-btn">방 초대코드 복사</button>
                 </div>
-                <h1 class="top-bar-title">순발력 게임</h1>
+                <h1 class="top-bar-title">LED 게임</h1>
                 <div class="top-bar-right">
                     <div id="host-controls">
-                        <div id="game-mode-selector">
-                            <div class="mode-switch-box">
-                                <div class="switch-option" data-mode="나혼자 말해요">나혼자 말해요</div>
-                                <div class="switch-option" data-mode="모두가 말해요">모두가 말해요</div>
-                                <div class="switch-thumb"></div>
-                            </div>
-                        </div>
+                        <button id="start-game-button" class="hidden">게임 시작</button>
                         <button id="reset-round-button" class="hidden">완전 초기화</button>
                     </div>
                 </div>
@@ -60,18 +53,16 @@
             <div id="main-game-area">
                 <div id="player-list-board"></div>
                 
-                <div class="grid-container">
-                    <!-- 1행 -->
-                    <div id="box-r1c1" class="box text-box"></div><div id="box-r1c2" class="box text-box"></div><div id="box-r1c3" class="box text-box"></div>
-                    <!-- 2행 -->
-                    <div id="box-r2c1" class="box text-box"></div><div id="box-r2c2" class="box special"></div><div id="box-r2c3" class="box text-box"></div>
-                    <!-- 3행 (중앙) -->
-                    <div id="box-r3c1" class="box neutral-box"></div><div id="box-r3c2" class="box trigger">게임 시작</div><div id="box-r3c3" class="box neutral-box"></div>
-                    <!-- 4행 -->
-                    <div id="box-r4c1" class="box text-box"></div><div id="box-r4c2" class="box special"></div><div id="box-r4c3" class="box text-box"></div>
-                    <!-- 5행 -->
-                    <div id="box-r5c1" class="box text-box"></div><div id="box-r5c2" class="box text-box"></div><div id="box-r5c3" class="box text-box"></div>
+                <!-- [수정] 2x2 그리드 UI 추가 -->
+                <div id="led-game-board">
+                    <div class="led-grid-container">
+                        <div class="led-box" id="led-box-1"></div>
+                        <div class="led-box" id="led-box-2"></div>
+                        <div class="led-box" id="led-box-3"></div>
+                        <div class="led-box" id="led-box-4"></div>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -79,6 +70,6 @@
     <script src="/js/nav.js"></script> 
     <script src="/socket.io/socket.io.js"></script>
     <script src="database.js"></script>
-    <script src="client.js"></script> <!-- [수정] script.js -> client.js -->
+    <script src="client.js"></script>
 </body>
 </html>

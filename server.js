@@ -8,6 +8,7 @@ const averageGameLogic = require('./game-logic/average-game.js');
 const minorityGameLogic = require('./game-logic/minority-game.js');
 const wordMafiaLogic = require('./game-logic/word-mafia.js');
 const gridGameLogic = require('./game-logic/grid-game.js');
+const ledGameLogic = require('./game-logic/led-game.js'); // [추가] LED 게임 로직 모듈
 
 const app = express();
 const server = http.createServer(app);
@@ -26,6 +27,7 @@ app.get('/01.average-game', (req, res) => { res.sendFile(path.join(__dirname, 'p
 app.get('/02.minority-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', '02.minority-game', 'index.html')); });
 app.get('/03.word-mafia', (req, res) => { res.sendFile(path.join(__dirname, 'public', '03.word-mafia', 'index.html')); });
 app.get('/04.grid-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', '04.grid-game', 'index.html')); });
+app.get('/05.led-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', '05.led-game', 'index.html')); }); // [추가] LED 게임 라우팅
 
 // ===================================================================
 // --- 각 게임 네임스페이스 로직 실행 ---
@@ -35,6 +37,7 @@ averageGameLogic(io, generateRoomCode);
 minorityGameLogic(io, generateRoomCode);
 wordMafiaLogic(io, generateRoomCode);
 gridGameLogic(io, generateRoomCode);
+ledGameLogic(io, generateRoomCode); // [추가] LED 게임 로직 실행
 
 
 const PORT = process.env.PORT || 3000;
