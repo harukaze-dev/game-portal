@@ -47,8 +47,10 @@ h1 {
     margin-bottom: 2.5rem;
 }
 
+/* --- [수정된 부분] Flexbox에서 Grid로 레이아웃 변경 --- */
 .game-selection {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3개의 열을 가진 그리드 생성 */
     gap: 2rem;
     justify-content: center;
 }
@@ -58,11 +60,13 @@ h1 {
     border: 1px solid #eee;
     border-radius: 12px;
     padding: 2rem;
-    width: 250px;
+    /* width와 flex-shrink 속성 제거, grid가 너비를 제어하도록 함 */
     text-decoration: none;
     color: inherit;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    flex-shrink: 0; 
+    display: flex; /* 내부 콘텐츠 정렬을 위해 flex 사용 */
+    flex-direction: column;
+    justify-content: center;
 }
 
 .game-card:hover {
@@ -80,6 +84,25 @@ h1 {
     line-height: 1.5;
     color: #555;
     margin-bottom: 0;
+    flex-grow: 1; /* 설명 텍스트가 공간을 채우도록 함 */
+}
+
+/* --- [추가된 부분] '개발중' 카드 스타일 --- */
+.game-card.disabled {
+    background: #f1f1f1;
+    border-color: #e0e0e0;
+    cursor: not-allowed;
+    align-items: center; /* 수직 중앙 정렬 */
+}
+
+.game-card.disabled h2 {
+    color: #aaa;
+    margin: 0;
+}
+
+.game-card.disabled:hover {
+    transform: none;
+    box-shadow: none;
 }
 
 
@@ -94,13 +117,12 @@ h1 {
     }
 
     .game-selection {
-        flex-direction: column;
-        align-items: center; 
+        /* [수정] 모바일에서는 1열로 표시되도록 변경 */
+        grid-template-columns: 1fr;
         gap: 1.5rem;
     }
 
     .game-card {
-        /* box-sizing이 적용되었기 때문에, 이제 이 코드는 완벽하게 작동합니다. */
         width: 100%;
         max-width: 400px; 
     }
