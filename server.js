@@ -10,7 +10,11 @@ const wordMafiaLogic = require('./game-logic/word-mafia.js');
 const gridGameLogic = require('./game-logic/grid-game.js');
 const ledGameLogic = require('./game-logic/led-game.js');
 const textGameLogic = require('./game-logic/text-game.js');
-const indianPokerLogic = require('./game-logic/indian-poker.js'); // [추가] 양세찬게임 로직 모듈
+const indianPokerLogic = require('./game-logic/indian-poker.js');
+const pokemonGameLogic = require('./game-logic/pokemon-game.js');
+
+// [추가] 포켓몬 게임에 필요한 데이터를 메인 서버에서 직접 불러옵니다.
+const { pokemonDB } = require('./public/08.pokemon-game/pokemon_db.js');
 
 const app = express();
 const server = http.createServer(app);
@@ -31,7 +35,9 @@ app.get('/03.word-mafia', (req, res) => { res.sendFile(path.join(__dirname, 'pub
 app.get('/04.grid-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', '04.grid-game', 'index.html')); });
 app.get('/05.led-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', '05.led-game', 'index.html')); });
 app.get('/06.text-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', '06.text-game', 'index.html')); });
-app.get('/07.indian-poker', (req, res) => { res.sendFile(path.join(__dirname, 'public', '07.indian-poker', 'index.html')); }); // [추가] 양세찬게임 라우팅
+app.get('/07.indian-poker', (req, res) => { res.sendFile(path.join(__dirname, 'public', '07.indian-poker', 'index.html')); });
+app.get('/08.pokemon-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', '08.pokemon-game', 'index.html')); });
+
 
 // ===================================================================
 // --- 각 게임 네임스페이스 로직 실행 ---
@@ -43,7 +49,10 @@ wordMafiaLogic(io, generateRoomCode);
 gridGameLogic(io, generateRoomCode);
 ledGameLogic(io, generateRoomCode);
 textGameLogic(io, generateRoomCode);
-indianPokerLogic(io, generateRoomCode); // [추가] 양세찬게임 로직 실행
+indianPokerLogic(io, generateRoomCode);
+
+// [수정] 포켓몬 게임 로직 실행 시, 불러온 포켓몬 DB 데이터를 인자로 전달합니다.
+pokemonGameLogic(io, generateRoomCode, pokemonDB);
 
 
 const PORT = process.env.PORT || 3000;
