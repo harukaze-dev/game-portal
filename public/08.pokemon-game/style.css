@@ -17,32 +17,6 @@
 #host-controls button { padding: 0.5rem 1rem; font-size: 1rem; font-family: 'Poppins', 'Noto Sans KR', sans-serif; border-radius: 8px; border: none; cursor: pointer; transition: all 0.3s ease; font-weight: bold; white-space: nowrap; background-color: var(--mint-color); color: white; }
 #host-controls button:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
 
-/* TTS 버튼 스타일 */
-.tts-btn {
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    font-size: 1.5rem;
-    border-radius: 50%;
-    border: 2px solid #a5b4fc;
-    background-color: #e0e7ff;
-    color: #4338ca;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.2s ease;
-}
-.tts-btn:hover {
-    background-color: #c7d2fe;
-}
-.tts-btn.off {
-    background-color: #e5e7eb;
-    border-color: #9ca3af;
-    color: #6b7280;
-}
-
-
 /* 난이도 선택 버튼 그룹 스타일 */
 #difficulty-controls {
     display: flex;
@@ -102,7 +76,7 @@
 /* --- 4. 팝업 및 모바일 반응형 스타일 --- */
 #game-popup { 
     position: fixed; 
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0; /* 전체 화면을 덮도록 수정 */
     z-index: 1005; 
     opacity: 0; 
     visibility: hidden; 
@@ -110,8 +84,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.4);
-    transform: none;
+    background-color: rgba(0, 0, 0, 0.4); /* 팝업 시 뒷 배경 어둡게 */
+    transform: none; /* 스케일 변환 제거 */
 }
 #game-popup.show { transform: none; opacity: 1; visibility: visible; }
 #game-popup.hide { opacity: 0; visibility: hidden; }
@@ -143,6 +117,7 @@
 .popup-pokemon-name { font-size: 2.2rem; color: #333; font-weight: 700; }
 .popup-winner-text { font-size: 1.2rem; color: #555; font-weight: 500; }
 
+/* [추가] 카운트다운 원형 스타일 */
 .countdown-circle {
     width: 150px;
     height: 150px;
@@ -154,6 +129,7 @@
     box-shadow: 0 0 20px rgba(0,0,0,0.3);
     animation: zoomIn 0.3s ease-out;
 }
+/* [추가] 카운트다운 애니메이션 */
 @keyframes zoomIn {
     from { transform: scale(0.5); opacity: 0; }
     to { transform: scale(1); opacity: 1; }

@@ -9,7 +9,6 @@ let myPlayerId = '';
 let myProfileImageSrc = document.getElementById('lobby-profile-preview').src;
 let currentGameState = null;
 let isGridLocked = false;
-let isTtsEnabled = true;
 
 // --- DOM Elements ---
 const lobbyContainer = document.getElementById('lobby-container');
@@ -22,7 +21,6 @@ const pokemonGridContainer = document.getElementById('pokemon-grid-container');
 const questionDisplayArea = document.getElementById('question-display-area');
 const pokemonDescriptionText = document.getElementById('pokemon-description');
 const difficultyControls = document.getElementById('difficulty-controls');
-const ttsToggleButton = document.getElementById('tts-toggle-btn');
 
 // --- 이벤트 리스너 통합 관리 ---
 document.addEventListener('click', (event) => {
@@ -31,15 +29,6 @@ document.addEventListener('click', (event) => {
     if (target.id === 'create-room-btn') handleCreateRoom();
     if (target.id === 'join-room-btn') handleJoinRoom();
     if (target.id === 'copy-code-btn') handleCopyCode();
-    
-    if (target.id === 'tts-toggle-btn') {
-        isTtsEnabled = !isTtsEnabled;
-        target.classList.toggle('off', !isTtsEnabled);
-        target.textContent = isTtsEnabled ? '🔊' : '🔇';
-        if (!isTtsEnabled) {
-            window.speechSynthesis.cancel();
-        }
-    }
     
     if (!currentGameState) return;
     const me = currentGameState.players[myPlayerId];
@@ -88,6 +77,7 @@ socket.on('guessResult', ({ isCorrect }) => {
         isGridLocked = true;
         pokemonGridContainer.classList.add('disabled');
         
+        // [수정] 오답 딜레이 1초로 단축
         setTimeout(() => {
             isGridLocked = false;
             pokemonGridContainer.classList.remove('disabled');
@@ -100,14 +90,6 @@ socket.on('updateGameState', (gameState) => {
     const oldState = currentGameState ? currentGameState.state : null;
     const newState = gameState.state;
     currentGameState = gameState;
-    
-    // [핵심 수정] TTS 호출 위치 변경
-    // 새로운 라운드가 시작되었을 때만 문제를 읽어줌
-    if (newState === 'playing_guessing' && oldState !== 'playing_guessing') {
-        if (gameState.currentPokemon) {
-            speak(gameState.currentPokemon.description);
-        }
-    }
     
     if (oldState === 'playing_guessing' && newState === 'round_end') {
         const winner = gameState.players[gameState.winnerId];
@@ -165,9 +147,7 @@ function renderTopBarAndQuestion(gameState, me) {
     } else {
         questionDisplayArea.classList.remove('hidden');
         if (gameState.currentPokemon) {
-            const questionText = gameState.currentPokemon.description;
-            pokemonDescriptionText.textContent = questionText;
-            // [삭제] 여기서 TTS를 호출하지 않음
+            pokemonDescriptionText.textContent = gameState.currentPokemon.description;
         }
     }
 }
@@ -226,21 +206,6 @@ function renderPokemonGrid(gameState) {
 }
 
 // --- 유틸리티 함수 ---
-function speak(text) {
-    if (!isTtsEnabled || typeof window.speechSynthesis === 'undefined') {
-        return;
-    }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    const koreanVoice = window.speechSynthesis.getVoices().find(voice => voice.lang === 'ko-KR');
-    if (koreanVoice) {
-        utterance.voice = koreanVoice;
-    }
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    window.speechSynthesis.speak(utterance);
-}
-
 function showPopup(content, duration) {
     const popup = document.getElementById('game-popup');
     if (!popup) return;
@@ -255,7 +220,18 @@ function showPopup(content, duration) {
 
 function showCountdownPopup(count) {
     const popupContent = `<div class="countdown-circle"><span class="countdown-text">${count}</span></div>`;
-    showPopup(popupContent, 450); // 0.5초 간격에 맞춰 0.45초간 표시
+    const popup = document.getElementById('game-popup');
+    if (!popup) return;
+    popup.innerHTML = popupContent;
+    popup.classList.remove('hide');
+    popup.classList.add('show');
+
+    if (count <= 1) {
+        setTimeout(() => {
+            popup.classList.remove('show');
+            popup.classList.add('hide');
+        }, 450); 
+    }
 }
 
 function showToast(message, type = 'info') { 

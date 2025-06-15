@@ -1,4 +1,4 @@
-// game-logic/pokemon-game.js
+// [수정] game-logic/pokemon-game.js
 // '포켓몬게임' 서버 로직 파일
 
 module.exports = (io, generateRoomCode, pokemonDB) => {
