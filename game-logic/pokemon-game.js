@@ -25,16 +25,15 @@ module.exports = (io, generateRoomCode, pokemonDB) => {
         }
 
         function startNewRound(room) {
-            // 난이도에 따라 그리드 크기 및 문제 수 결정
             const difficultyMap = { easy: 2, normal: 3, hard: 4 };
-            const gridSize = difficultyMap[room.difficulty] || 4; // 기본값 hard
+            const gridSize = difficultyMap[room.difficulty] || 4;
             const totalPokemons = gridSize * gridSize;
 
             const answerPokemon = { ...pokemonDB[Math.floor(Math.random() * pokemonDB.length)] };
             const decoys = [];
             const tempDB = shuffleArray(pokemonDB);
             for (const pokemon of tempDB) {
-                if (decoys.length >= totalPokemons - 1) break; // 난이도에 맞는 수만큼 오답 선택
+                if (decoys.length >= totalPokemons - 1) break;
                 if (pokemon.id !== answerPokemon.id) {
                     decoys.push(pokemon);
                 }
@@ -50,7 +49,6 @@ module.exports = (io, generateRoomCode, pokemonDB) => {
             const room = pokemonGameRooms[roomCode];
             if (!room) return;
 
-            // 클라이언트 정답 팝업 시간 1.5초 대기
             setTimeout(() => {
                 let count = 3; 
                 function countdown() {
@@ -75,7 +73,7 @@ module.exports = (io, generateRoomCode, pokemonDB) => {
             const roomCode = generateRoomCode();
             pokemonGameRooms[roomCode] = {
                 code: roomCode, players: {}, state: 'waiting', maxPlayers: MAX_PLAYERS,
-                difficulty: 'hard', // 기본 난이도 설정
+                difficulty: 'hard',
                 currentPokemon: null, gridPokemons: [], winnerId: null
             };
             socket.join(roomCode);
@@ -123,14 +121,20 @@ module.exports = (io, generateRoomCode, pokemonDB) => {
             if (pokemonId === room.currentPokemon.id) {
                 const winner = room.players[socket.id];
                 if (winner) {
-                    winner.cumulativeScore += 1;
+                    winner.cumulativeScore += 2;
                     room.winnerId = socket.id;
                     room.state = 'round_end';
                     pokemonGameNsp.to(roomCode).emit('updateGameState', getGameState(roomCode));
                     startNextRoundSequence(roomCode);
                 }
             } else {
+                const player = room.players[socket.id];
+                if(player) {
+                    // [핵심 수정] Math.max를 사용하여 점수가 0 미만으로 내려가지 않도록 함
+                    player.cumulativeScore = Math.max(0, player.cumulativeScore - 1);
+                }
                 socket.emit('guessResult', { isCorrect: false });
+                pokemonGameNsp.to(roomCode).emit('updateGameState', getGameState(roomCode));
             }
         });
         
