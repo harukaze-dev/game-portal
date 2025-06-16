@@ -4,6 +4,9 @@
  * 포켓몬 데이터를 배열 형태로 저장하는 데이터베이스 파일입니다.
  * 이 데이터는 웹 페이지에서 포켓몬 도감, 검색, 필터링 등 다양한 기능에 활용될 수 있습니다.
  * 
+ * [수정 사항]
+ * - 각 포켓몬의 설명(description)에 해당 포켓몬의 이름(name)이 포함된 경우, '■■■'로 수정되었습니다.
+ * 
  * [데이터 구조]
  * 각 포켓몬은 하나의 객체(Object)로 표현됩니다.
  * - id: 고유 번호 (Number) - 데이터를 식별하기 위한 유니크한 값입니다.
@@ -70,7 +73,7 @@ const pokemonDB = [
     type1: '불꽃',
     type2: '비행',
     image: '/assets/pokemon/No.0006.png',
-    description: '정말 화가 난 리자몽의 꼬리 끝 불꽃은 푸르스름하게 불타오른다.'
+    description: '정말 화가 난 ■■■의 꼬리 끝 불꽃은 푸르스름하게 불타오른다.'
   },
   {
     id: 12,
@@ -178,7 +181,7 @@ const pokemonDB = [
     type1: '노말',
     type2: '비행',
     image: '/assets/pokemon/No.0018.png',
-    description: '피죤투의 힘찬 날갯짓은 큰 나무도 휠 정도의 강풍을 일으킨다.'
+    description: '■■■의 힘찬 날갯짓은 큰 나무도 휠 정도의 강풍을 일으킨다.'
   },
   {
     id: 29,
@@ -331,7 +334,7 @@ const pokemonDB = [
     type1: '페어리',
     type2: null,
     image: '/assets/pokemon/No.0035.png',
-    description: '삐삐들은 보름달 밤에 어디에서 왔는지도 모르게 모여 춤춘다. 달빛을 받으면 떠오른다.'
+    description: '■■들은 보름달 밤에 어디에서 왔는지도 모르게 모여 춤춘다. 달빛을 받으면 떠오른다.'
   },
   {
     id: 52,
@@ -430,7 +433,7 @@ const pokemonDB = [
     type1: '벌레',
     type2: '풀',
     image: '/assets/pokemon/No.0046.png',
-    description: '동충하초라고 불리는 버섯을 등에 기르고 있다. 파라스와 함께 크게 자란다.'
+    description: '동충하초라고 불리는 버섯을 등에 기르고 있다. ■■■와 함께 크게 자란다.'
   },
   {
     id: 65,
@@ -439,7 +442,7 @@ const pokemonDB = [
     type1: '벌레',
     type2: '풀',
     image: '/assets/pokemon/No.0047.png',
-    description: '몸보다 큰 버섯이 파라섹트를 조종하고 있다. 독 포자를 여기저기 뿌린다.'
+    description: '몸보다 큰 버섯이 ■■■를 조종하고 있다. 독 포자를 여기저기 뿌린다.'
   },
   {
     id: 66,
@@ -520,7 +523,7 @@ const pokemonDB = [
     type1: '격투',
     type2: null,
     image: '/assets/pokemon/No.0056.png',
-    description: '나무 위에 무리 지어 산다. 무리에서 떨어진 망키는 외로운 나머지 금방 화를 낸다.'
+    description: '나무 위에 무리 지어 산다. 무리에서 떨어진 ■■는 외로운 나머지 금방 화를 낸다.'
   },
   {
     id: 81,
@@ -592,7 +595,7 @@ const pokemonDB = [
     type1: '에스퍼',
     type2: null,
     image: '/assets/pokemon/No.0064.png',
-    description: '윤겔라가 옆에 있으면 TV에 이상한 그림자가 비친다. 그것을 보면 불행해진다고 전해진다.'
+    description: '■■■가 옆에 있으면 TV에 이상한 그림자가 비친다. 그것을 보면 불행해진다고 전해진다.'
   },
   {
     id: 91,
@@ -619,7 +622,7 @@ const pokemonDB = [
     type1: '격투',
     type2: null,
     image: '/assets/pokemon/No.0067.png',
-    description: '근육몬의 끝없는 파워는 매우 위험하므로 힘을 제어하는 벨트를 차고 있다.'
+    description: '■■■의 끝없는 파워는 매우 위험하므로 힘을 제어하는 벨트를 차고 있다.'
   },
   {
     id: 95,
@@ -664,7 +667,7 @@ const pokemonDB = [
     type1: '물',
     type2: '독',
     image: '/assets/pokemon/No.0072.png',
-    description: '바닷물이 빠지면 모래 해변에 남아 바싹 마른 왕눈해를 볼 수 있다.'
+    description: '바닷물이 빠지면 모래 해변에 남아 바싹 마른 ■■■를 볼 수 있다.'
   },
   {
     id: 101,
@@ -736,7 +739,7 @@ const pokemonDB = [
     type1: '물',
     type2: '에스퍼',
     image: '/assets/pokemon/No.0080.png',
-    description: '야돈이 바다로 먹이를 잡으러 갔다가 셀러에게 꼬리를 물려 야도란이 되었다.'
+    description: '야돈이 바다로 먹이를 잡으러 갔다가 셀러에게 꼬리를 물려 ■■■이 되었다.'
   },
   {
     id: 117,
@@ -835,7 +838,7 @@ const pokemonDB = [
     type1: '물',
     type2: '얼음',
     image: '/assets/pokemon/No.0091.png',
-    description: '조수의 흐름이 격한 바다에 서식하는 파르셀의 껍데기에 붙은 가시는 크고 날카롭다.'
+    description: '조수의 흐름이 격한 바다에 서식하는 ■■■의 껍데기에 붙은 가시는 크고 날카롭다.'
   },
   {
     id: 131,
@@ -871,7 +874,7 @@ const pokemonDB = [
     type1: '바위',
     type2: '땅',
     image: '/assets/pokemon/No.0095.png',
-    description: '롱스톤이 땅속을 뚫고 나아가면 땅울림이 들리며 지면이 흔들린다. 이동 속도는 시속 80km.'
+    description: '■■■이 땅속을 뚫고 나아가면 땅울림이 들리며 지면이 흔들린다. 이동 속도는 시속 80km.'
   },
   {
     id: 137,
@@ -1276,7 +1279,7 @@ const pokemonDB = [
     type1: '바위',
     type2: '물',
     image: '/assets/pokemon/No.0141.png',
-    description: '투구푸스의 먹이가 육상 생활을 시작했기 때문에 투구푸스 역시 육지에 올라온 것으로 추측된다.'
+    description: '■■■의 먹이가 육상 생활을 시작했기 때문에 ■■■ 역시 육지에 올라온 것으로 추측된다.'
   },
   {
     id: 198,
@@ -1321,7 +1324,7 @@ const pokemonDB = [
     type1: '불꽃',
     type2: '비행',
     image: '/assets/pokemon/No.0146.png',
-    description: '전설의 새포켓몬 중의 1마리다. 파이어가 모습을 보이면 봄이 찾아온다고 전해진다.'
+    description: '전설의 새포켓몬 중의 1마리다. ■■■가 모습을 보이면 봄이 찾아온다고 전해진다.'
   },
   {
     id: 208,
@@ -1348,7 +1351,7 @@ const pokemonDB = [
     type1: '드래곤',
     type2: '비행',
     image: '/assets/pokemon/No.0149.png',
-    description: '드넓은 바다 어딘가에는 망나뇽만이 모여 사는 섬이 있다고 한다.'
+    description: '드넓은 바다 어딘가에는 ■■■만이 모여 사는 섬이 있다고 한다.'
   },
   {
     id: 211,
@@ -1384,7 +1387,7 @@ const pokemonDB = [
     type1: '풀',
     type2: null,
     image: '/assets/pokemon/No.0154.png',
-    description: '메가니움의 주변에 있으면 삼림욕을 한 것처럼 상쾌한 기분이 든다.'
+    description: '■■■의 주변에 있으면 삼림욕을 한 것처럼 상쾌한 기분이 든다.'
   },
   {
     id: 218,
@@ -1681,7 +1684,7 @@ const pokemonDB = [
     type1: '풀',
     type2: '비행',
     image: '/assets/pokemon/No.0187.png',
-    description: '바람을 타고 상당히 먼 거리를 이동한다. 팔데아의 통통코가 어디서 온 것인지는 확실히 밝혀진 것이 없다.'
+    description: '바람을 타고 상당히 먼 거리를 이동한다. 팔데아의 ■■■가 어디서 온 것인지는 확실히 밝혀진 것이 없다.'
   },
   {
     id: 253,
@@ -1690,7 +1693,7 @@ const pokemonDB = [
     type1: '풀',
     type2: '비행',
     image: '/assets/pokemon/No.0188.png',
-    description: '두코 마니아들은 머리에 달린 꽃에서 나는 향기로 어디서 태어났는지를 알 수 있다고 한다.'
+    description: '■■ 마니아들은 머리에 달린 꽃에서 나는 향기로 어디서 태어났는지를 알 수 있다고 한다.'
   },
   {
     id: 254,
@@ -1699,7 +1702,7 @@ const pokemonDB = [
     type1: '풀',
     type2: '비행',
     image: '/assets/pokemon/No.0189.png',
-    description: '계절풍을 타고 여행한다. 솜 포자가 다 떨어지면 여행과 함께 솜솜코의 일생도 끝난다.'
+    description: '계절풍을 타고 여행한다. 솜 포자가 다 떨어지면 여행과 함께 ■■■의 일생도 끝난다.'
   },
   {
     id: 255,
@@ -1978,7 +1981,7 @@ const pokemonDB = [
     type1: '물',
     type2: '바위',
     image: '/assets/pokemon/No.0222.png',
-    description: '남쪽의 깨끗한 바다에는 많은 코산호가 있다. 더러워진 바다에서는 살 수 없다.'
+    description: '남쪽의 깨끗한 바다에는 많은 ■■■가 있다. 더러워진 바다에서는 살 수 없다.'
   },
   {
     id: 296,
@@ -2005,7 +2008,7 @@ const pokemonDB = [
     type1: '물',
     type2: '비행',
     image: '/assets/pokemon/No.0226.png',
-    description: '파도가 조용할 때는 드넓은 창해를 나는 듯이 헤엄치는 만타인의 무리와 조우한다.'
+    description: '파도가 조용할 때는 드넓은 창해를 나는 듯이 헤엄치는 ■■■의 무리와 조우한다.'
   },
   {
     id: 301,
@@ -2122,7 +2125,7 @@ const pokemonDB = [
     type1: '노말',
     type2: null,
     image: '/assets/pokemon/No.0242.png',
-    description: '해피너스가 낳은 알을 한 입이라도 먹은 사람은 누구에게나 상냥해진다.'
+    description: '■■■가 낳은 알을 한 입이라도 먹은 사람은 누구에게나 상냥해진다.'
   },
   {
     id: 320,
@@ -2311,7 +2314,7 @@ const pokemonDB = [
     type1: '벌레',
     type2: '독',
     image: '/assets/pokemon/No.0269.png',
-    description: '야행성 포켓몬이다. 불빛에 이끌려 나온 독케일이 가로수의 잎을 헤적거리며 먹어 댄다.'
+    description: '야행성 포켓몬이다. 불빛에 이끌려 나온 ■■■이 가로수의 잎을 헤적거리며 먹어 댄다.'
   },
   {
     id: 350,
@@ -2545,7 +2548,7 @@ const pokemonDB = [
     type1: '노말',
     type2: null,
     image: '/assets/pokemon/No.0295.png',
-    description: '폭음룡이 울부짖는 소리는 10km 전방까지 닿는다. 몸 곳곳의 구멍에서 갖가지 소리를 낸다.'
+    description: '■■■이 울부짖는 소리는 10km 전방까지 닿는다. 몸 곳곳의 구멍에서 갖가지 소리를 낸다.'
   },
   {
     id: 377,
@@ -2581,7 +2584,7 @@ const pokemonDB = [
     type1: '바위',
     type2: null,
     image: '/assets/pokemon/No.0299.png',
-    description: '코코파스의 코의 자석은 절대로 고장 나지 않아서 여행하는 트레이너의 좋은 파트너이다.'
+    description: '■■■의 코의 자석은 절대로 고장 나지 않아서 여행하는 트레이너의 좋은 파트너이다.'
   },
   {
     id: 381,
@@ -2689,7 +2692,7 @@ const pokemonDB = [
     type1: '풀',
     type2: '독',
     image: '/assets/pokemon/No.0315.png',
-    description: '맑은 물을 마시고 자란 로젤리아는 산뜻한 색상의 꽃을 피우는 것으로 알려져 있다.'
+    description: '맑은 물을 마시고 자란 ■■■는 산뜻한 색상의 꽃을 피우는 것으로 알려져 있다.'
   },
   {
     id: 402,
@@ -3022,7 +3025,7 @@ const pokemonDB = [
     type1: '얼음',
     type2: null,
     image: '/assets/pokemon/No.0361.png',
-    description: '커다란 잎사귀 아래서 여러 마리의 눈꼬마가 모여 사이좋게 살고 있다고 한다.'
+    description: '커다란 잎사귀 아래서 여러 마리의 ■■■가 모여 사이좋게 살고 있다고 한다.'
   },
   {
     id: 453,
@@ -3202,7 +3205,7 @@ const pokemonDB = [
     type1: '풀',
     type2: null,
     image: '/assets/pokemon/No.0387.png',
-    description: '흙으로 만들어진 등껍질을 만져 보아 적당히 젖어 있다면 그 모부기는 매우 건강한 것이다.'
+    description: '흙으로 만들어진 등껍질을 만져 보아 적당히 젖어 있다면 그 ■■■는 매우 건강한 것이다.'
   },
   {
     id: 490,
@@ -3211,7 +3214,7 @@ const pokemonDB = [
     type1: '풀',
     type2: null,
     image: '/assets/pokemon/No.0388.png',
-    description: '숲에서 사는 수풀부기는 아름다운 샘물이 있는 자신만의 비밀 장소를 갖고 있다고 한다.'
+    description: '숲에서 사는 ■■■는 아름다운 샘물이 있는 자신만의 비밀 장소를 갖고 있다고 한다.'
   },
   {
     id: 491,
@@ -3220,7 +3223,7 @@ const pokemonDB = [
     type1: '풀',
     type2: '땅',
     image: '/assets/pokemon/No.0389.png',
-    description: '오랜 옛날 사람들은 대지 밑에 거대한 토대부기가 있다고 공상했었다.'
+    description: '오랜 옛날 사람들은 대지 밑에 거대한 ■■■가 있다고 공상했었다.'
   },
   {
     id: 492,
@@ -3256,7 +3259,7 @@ const pokemonDB = [
     type1: '물',
     type2: null,
     image: '/assets/pokemon/No.0393.png',
-    description: '걷는 것이 서툴러서 넘어질 때도 있지만 프라이드가 높은 팽도리는 신경 쓰지 않고 당당하게 가슴을 편다.'
+    description: '걷는 것이 서툴러서 넘어질 때도 있지만 프라이드가 높은 ■■■는 신경 쓰지 않고 당당하게 가슴을 편다.'
   },
   {
     id: 496,
@@ -3301,7 +3304,7 @@ const pokemonDB = [
     type1: '노말',
     type2: '비행',
     image: '/assets/pokemon/No.0398.png',
-    description: '찌르호크가 되면 무리에서 떨어져 혼자서 살아간다. 강인한 날개를 가지고 있다.'
+    description: '■■■가 되면 무리에서 떨어져 혼자서 살아간다. 강인한 날개를 가지고 있다.'
   },
   {
     id: 501,
@@ -3454,7 +3457,7 @@ const pokemonDB = [
     type1: '벌레',
     type2: '비행',
     image: '/assets/pokemon/No.0415.png',
-    description: '밤이 되면 100마리 정도의 세꿀버리가 모여 커다란 덩어리가 되어 잠잔다.'
+    description: '밤이 되면 100마리 정도의 ■■■가 모여 커다란 덩어리가 되어 잠잔다.'
   },
   {
     id: 522,
@@ -3535,7 +3538,7 @@ const pokemonDB = [
     type1: '고스트',
     type2: '비행',
     image: '/assets/pokemon/No.0425.png',
-    description: '풍선으로 착각해 흔들풍손을 가지고 있었던 어린아이가 사라지는 경우가 있다고 한다.'
+    description: '풍선으로 착각해 ■■■을 가지고 있었던 어린아이가 사라지는 경우가 있다고 한다.'
   },
   {
     id: 535,
@@ -3634,7 +3637,7 @@ const pokemonDB = [
     type1: '강철',
     type2: '에스퍼',
     image: '/assets/pokemon/No.0436.png',
-    description: '옛날 사람들은 동미러의 등 무늬에 신비한 힘이 깃들어 있다고 믿었다.'
+    description: '옛날 사람들은 ■■■의 등 무늬에 신비한 힘이 깃들어 있다고 믿었다.'
   },
   {
     id: 547,
@@ -3913,7 +3916,7 @@ const pokemonDB = [
     type1: '풀',
     type2: null,
     image: '/assets/pokemon/No.0470.png',
-    description: '맑은 날에 잠든 리피아는 광합성을 해서 깨끗한 공기를 만들어 낸다.'
+    description: '맑은 날에 잠든 ■■■는 광합성을 해서 깨끗한 공기를 만들어 낸다.'
   },
   {
     id: 584,
@@ -4327,7 +4330,7 @@ const pokemonDB = [
     type1: '에스퍼',
     type2: '비행',
     image: '/assets/pokemon/No.0527.png',
-    description: '동굴을 올려다봤을 때 벽에 하트 모양 자국이 있다면 또르박쥐가 살고 있다는 증거다.'
+    description: '동굴을 올려다봤을 때 벽에 하트 모양 자국이 있다면 ■■■가 살고 있다는 증거다.'
   },
   {
     id: 653,
@@ -4390,7 +4393,7 @@ const pokemonDB = [
     type1: '격투',
     type2: null,
     image: '/assets/pokemon/No.0534.png',
-    description: '콘크리트를 만드는 기술은 2000년 전에 노보청에게 배운 것이라고 여겨지고 있다.'
+    description: '콘크리트를 만드는 기술은 2000년 전에 ■■■에게 배운 것이라고 여겨지고 있다.'
   },
   {
     id: 661,
@@ -4399,7 +4402,7 @@ const pokemonDB = [
     type1: '물',
     type2: null,
     image: '/assets/pokemon/No.0535.png',
-    description: '아름다운 파문이 펼쳐지는 물 아래에는 동챙이가 날카로운 소리로 울고 있다.'
+    description: '아름다운 파문이 펼쳐지는 물 아래에는 ■■■가 날카로운 소리로 울고 있다.'
   },
   {
     id: 662,
@@ -4480,7 +4483,7 @@ const pokemonDB = [
     type1: '풀',
     type2: '페어리',
     image: '/assets/pokemon/No.0546.png',
-    description: '소미안이 뿜는 솜을 사용한 베개와 이불은 가볍고 통기성이 좋은 고급품이다.'
+    description: '■■■이 뿜는 솜을 사용한 베개와 이불은 가볍고 통기성이 좋은 고급품이다.'
   },
   {
     id: 673,
@@ -4642,7 +4645,7 @@ const pokemonDB = [
     type1: '바위',
     type2: '비행',
     image: '/assets/pokemon/No.0566.png',
-    description: '모든 새포켓몬의 조상이다. 아켄 자체는 아직 날지 못해 나무 위를 점프해서 이동했다.'
+    description: '모든 새포켓몬의 조상이다. ■■ 자체는 아직 날지 못해 나무 위를 점프해서 이동했다.'
   },
   {
     id: 701,
@@ -4687,7 +4690,7 @@ const pokemonDB = [
     type1: '악',
     type2: null,
     image: '/assets/pokemon/No.0571.png',
-    description: '조로아크를 잡으려 한 사람을 환영의 경치 속에 가둬서 혼내 줬다고 전해진다.'
+    description: '■■■를 잡으려 한 사람을 환영의 경치 속에 가둬서 혼내 줬다고 전해진다.'
   },
   {
     id: 709,
@@ -4822,7 +4825,7 @@ const pokemonDB = [
     type1: '노말',
     type2: '풀',
     image: '/assets/pokemon/No.0586.png',
-    description: '뿔에 많은 꽃이 핀 바라철록은 꽃에 영양분을 빼앗기기 때문에 성장이 조금 늦다고 한다.'
+    description: '뿔에 많은 꽃이 핀 ■■■은 꽃에 영양분을 빼앗기기 때문에 성장이 조금 늦다고 한다.'
   },
   {
     id: 731,
@@ -4849,7 +4852,7 @@ const pokemonDB = [
     type1: '풀',
     type2: '독',
     image: '/assets/pokemon/No.0590.png',
-    description: '몬스터볼의 개발자가 깜놀버슬을 좋아했다는 설이 있지만, 진위는 불명하다.'
+    description: '몬스터볼의 개발자가 ■■■을 좋아했다는 설이 있지만, 진위는 불명하다.'
   },
   {
     id: 734,
@@ -4858,7 +4861,7 @@ const pokemonDB = [
     type1: '풀',
     type2: '독',
     image: '/assets/pokemon/No.0591.png',
-    description: '내뿜는 독 포자를 조심해야 한다. 포자에 닿은 부분에서 뽀록나의 갓을 닮은 버섯이 자라기 때문이다.'
+    description: '내뿜는 독 포자를 조심해야 한다. 포자에 닿은 부분에서 ■■■의 갓을 닮은 버섯이 자라기 때문이다.'
   },
   {
     id: 735,
@@ -4885,7 +4888,7 @@ const pokemonDB = [
     type1: '벌레',
     type2: '전기',
     image: '/assets/pokemon/No.0595.png',
-    description: '거리에서 사는 파쪼옥은 민가의 콘센트에서 전기를 빨아들이는 방법을 알고 있다.'
+    description: '거리에서 사는 ■■은 민가의 콘센트에서 전기를 빨아들이는 방법을 알고 있다.'
   },
   {
     id: 741,
@@ -4948,7 +4951,7 @@ const pokemonDB = [
     type1: '전기',
     type2: null,
     image: '/assets/pokemon/No.0602.png',
-    description: '한 마리의 전력은 적지만 많은 저리어가 연결되면 번개와 같은 위력이 된다.'
+    description: '한 마리의 전력은 적지만 많은 ■■가 연결되면 번개와 같은 위력이 된다.'
   },
   {
     id: 748,
@@ -4975,7 +4978,7 @@ const pokemonDB = [
     type1: '에스퍼',
     type2: null,
     image: '/assets/pokemon/No.0605.png',
-    description: 'TV 근처에 있으면 모니터에 기묘한 풍경이 비친다. 리그레의 고향이라 여겨지고 있다.'
+    description: 'TV 근처에 있으면 모니터에 기묘한 풍경이 비친다. ■■■의 고향이라 여겨지고 있다.'
   },
   {
     id: 751,
@@ -4984,7 +4987,7 @@ const pokemonDB = [
     type1: '에스퍼',
     type2: null,
     image: '/assets/pokemon/No.0606.png',
-    description: '벰크가 나타난 목장에서는 배우르 1마리가 어느샌가 모습을 감춘다.'
+    description: '■■■가 나타난 목장에서는 배우르 1마리가 어느샌가 모습을 감춘다.'
   },
   {
     id: 752,
@@ -5074,7 +5077,7 @@ const pokemonDB = [
     type1: '벌레',
     type2: null,
     image: '/assets/pokemon/No.0617.png',
-    description: '재빠른 움직임으로 독을 날려서 싸운다. 어지리더가 주인공인 영화나 만화는 인기가 많다.'
+    description: '재빠른 움직임으로 독을 날려서 싸운다. ■■■가 주인공인 영화나 만화는 인기가 많다.'
   },
   {
     id: 763,
@@ -5245,7 +5248,7 @@ const pokemonDB = [
     type1: '땅',
     type2: '비행',
     image: '/assets/pokemon/No.0645.png',
-    description: '랜드로스가 찾아온 땅에는 작물에 열매가 많이 열리기 때문에 농지의 신이라고 전해진다.'
+    description: '■■■가 찾아온 땅에는 작물에 열매가 많이 열리기 때문에 농지의 신이라고 전해진다.'
   },
   {
     id: 796,
@@ -5272,7 +5275,7 @@ const pokemonDB = [
     type1: '노말',
     type2: '에스퍼',
     image: '/assets/pokemon/No.0648.png',
-    description: '메로엣타가 연주하는 선율에는 주위 포켓몬을 기쁘게 하거나 슬프게 할 정도의 힘이 있다.'
+    description: '■■■가 연주하는 선율에는 주위 포켓몬을 기쁘게 하거나 슬프게 할 정도의 힘이 있다.'
   },
   {
     id: 804,
@@ -5425,7 +5428,7 @@ const pokemonDB = [
     type1: '벌레',
     type2: '비행',
     image: '/assets/pokemon/No.0666.png',
-    description: '세계에는 다양한 무늬의 날개를 가진 비비용이 있다. 살고 있는 곳의 기후에 영향을 받는 것 같다.'
+    description: '세계에는 다양한 무늬의 날개를 가진 ■■■이 있다. 살고 있는 곳의 기후에 영향을 받는 것 같다.'
   },
   {
     id: 821,
@@ -5461,7 +5464,7 @@ const pokemonDB = [
     type1: '페어리',
     type2: null,
     image: '/assets/pokemon/No.0670.png',
-    description: '시든 꽃의 남은 힘을 끌어내어 건강해지게 한다. 빨간 꽃을 들고 있는 플라엣테.'
+    description: '시든 꽃의 남은 힘을 끌어내어 건강해지게 한다. 빨간 꽃을 들고 있는 ■■■.'
   },
   {
     id: 826,
@@ -5479,7 +5482,7 @@ const pokemonDB = [
     type1: '풀',
     type2: null,
     image: '/assets/pokemon/No.0672.png',
-    description: '최근까지도 산악 지대에 사는 사람들은 메이클의 등에 올라타서 산길을 이동했다.'
+    description: '최근까지도 산악 지대에 사는 사람들은 ■■■의 등에 올라타서 산길을 이동했다.'
   },
   {
     id: 828,
@@ -5533,7 +5536,7 @@ const pokemonDB = [
     type1: '강철',
     type2: '고스트',
     image: '/assets/pokemon/No.0679.png',
-    description: '먼 옛날에 이 검에 의해 죽은 인간의 영혼이 단칼빙의 영혼이 되었다.'
+    description: '먼 옛날에 이 검에 의해 죽은 인간의 영혼이 ■■■의 영혼이 되었다.'
   },
   {
     id: 836,
@@ -5623,7 +5626,7 @@ const pokemonDB = [
     type1: '바위',
     type2: '물',
     image: '/assets/pokemon/No.0689.png',
-    description: '7마리의 거북손손이 1마리의 몸을 이루고 있다. 머리가 손발에 명령하는 구조다.'
+    description: '7마리의 ■■■이 1마리의 몸을 이루고 있다. 머리가 손발에 명령하는 구조다.'
   },
   {
     id: 847,
@@ -5776,7 +5779,7 @@ const pokemonDB = [
     type1: '고스트',
     type2: '풀',
     image: '/assets/pokemon/No.0710.png',
-    description: '이승을 떠도는 영혼은 호바귀의 몸속에 들어간 뒤 저승으로 떠난다.'
+    description: '이승을 떠도는 영혼은 ■■■의 몸속에 들어간 뒤 저승으로 떠난다.'
   },
   {
     id: 870,
@@ -5803,7 +5806,7 @@ const pokemonDB = [
     type1: '얼음',
     type2: null,
     image: '/assets/pokemon/No.0713.png',
-    description: '꽁어름을 태우고 걷다가 우락고래 무리를 만나면 싸움이 일어나지 않게 지나간다.'
+    description: '■■■을 태우고 걷다가 우락고래 무리를 만나면 싸움이 일어나지 않게 지나간다.'
   },
   {
     id: 874,
@@ -5929,7 +5932,7 @@ const pokemonDB = [
     type1: '물',
     type2: '페어리',
     image: '/assets/pokemon/No.0730.png',
-    description: '누리레느에게 싸움은 스테이지다. 화려하게 노래하고 춤을 추며 먹이의 숨통을 끊는다.'
+    description: '■■■에게 싸움은 스테이지다. 화려하게 노래하고 춤을 추며 먹이의 숨통을 끊는다.'
   },
   {
     id: 896,
@@ -6127,7 +6130,7 @@ const pokemonDB = [
     type1: '물',
     type2: '벌레',
     image: '/assets/pokemon/No.0752.png',
-    description: '남을 잘 돌보는 성격이다. 먹이가 아닌 물거미도 수포로 감싸 보호하며 돌아다닌다.'
+    description: '남을 잘 돌보는 성격이다. 먹이가 아닌 ■■■도 수포로 감싸 보호하며 돌아다닌다.'
   },
   {
     id: 924,
@@ -6352,7 +6355,7 @@ const pokemonDB = [
     type1: '에스퍼',
     type2: '고스트',
     image: '/assets/pokemon/No.0792.png',
-    description: '코스모그가 진화한 암컷이라고 전해진다. 제3의 눈이 떠오를 때 다른 세계로 날아간다.'
+    description: '■■■가 진화한 암컷이라고 전해진다. 제3의 눈이 떠오를 때 다른 세계로 날아간다.'
   },
   {
     id: 972,
@@ -6406,7 +6409,7 @@ const pokemonDB = [
     type1: '풀',
     type2: null,
     image: '/assets/pokemon/No.0810.png',
-    description: '지니고 있는 스틱은 흥나숭의 체내에서 나오는 에너지를 받아 더 단단해지고 탄력이 생긴다.'
+    description: '지니고 있는 스틱은 ■■■의 체내에서 나오는 에너지를 받아 더 단단해지고 탄력이 생긴다.'
   },
   {
     id: 987,
@@ -6572,11 +6575,11 @@ const pokemonDB = [
   },
   {
     id: 1010,
-    pokedexId: 'No.0829',
+    pokedexId: 'No.0830',
     name: '꼬모카',
     type1: '풀',
     type2: null,
-    image: '/assets/pokemon/No.0829.png',
+    image: '/assets/pokemon/No.0830.png',
     description: '다리 하나를 땅에 꽂은 채 햇빛을 잔뜩 받으면 꽃잎이 선명한 색을 띠게 된다.'
   },
   {
@@ -6910,7 +6913,7 @@ const pokemonDB = [
     type1: '땅',
     type2: '고스트',
     image: '/assets/pokemon/No.0867.png',
-    description: '강한 저주를 담아 그린 고대의 그림이 데스마스의 영혼을 흡수해서 움직이기 시작했다.'
+    description: '강한 저주를 담아 그린 고대의 그림이 ■■■의 영혼을 흡수해서 움직이기 시작했다.'
   },
   {
     id: 1062,
@@ -6928,7 +6931,7 @@ const pokemonDB = [
     type1: '페어리',
     type2: null,
     image: '/assets/pokemon/No.0869.png',
-    description: '마휘핑이 데코레이션한 디저트는 깊이 있는 달콤함을 자랑하며 먹은 사람을 행복하게 만든다.'
+    description: '■■■이 데코레이션한 디저트는 깊이 있는 달콤함을 자랑하며 먹은 사람을 행복하게 만든다.'
   },
   {
     id: 1067,
@@ -7018,7 +7021,7 @@ const pokemonDB = [
     type1: '드래곤',
     type2: '고스트',
     image: '/assets/pokemon/No.0886.png',
-    description: '시속 200km로 날아다닌다. 싸움에서 지면 드라꼰은 금세 어딘가로 가 버린다.'
+    description: '시속 200km로 날아다닌다. 싸움에서 지면 ■■■은 금세 어딘가로 가 버린다.'
   },
   {
     id: 1087,
@@ -7027,7 +7030,7 @@ const pokemonDB = [
     type1: '드래곤',
     type2: '고스트',
     image: '/assets/pokemon/No.0887.png',
-    description: '신경을 곤두세우면 온몸을 투명하게 만들 수 있다. 뿔 안의 드라꼰도 보이지 않게 된다.'
+    description: '신경을 곤두세우면 온몸을 투명하게 만들 수 있다. 뿔 안의 ■■■도 보이지 않게 된다.'
   },
   {
     id: 1088,
@@ -7756,7 +7759,7 @@ const pokemonDB = [
     type1: '노말',
     type2: '에스퍼',
     image: '/assets/pokemon/No.0981.png',
-    description: '머리와 꼬리 2개의 뇌파가 동기화하여 에스퍼 파워가 키링키의 10배로 강화되었다.'
+    description: '머리와 꼬리 2개의 뇌파가 동기화하여 에스퍼 파워가 ■■■의 10배로 강화되었다.'
   },
   {
     id: 1200,
@@ -7774,7 +7777,7 @@ const pokemonDB = [
     type1: '악',
     type2: '강철',
     image: '/assets/pokemon/No.0983.png',
-    description: '큰 군세의 정점에 올라선 단 한 마리의 절각참만이 대도각참으로 진화할 수 있다.'
+    description: '큰 군세의 정점에 올라선 단 한 마리의 ■■■만이 대도각참으로 진화할 수 있다.'
   },
   {
     id: 1215,

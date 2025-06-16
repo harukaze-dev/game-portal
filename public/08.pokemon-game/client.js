@@ -8,7 +8,14 @@ let myRoomCode = '';
 let myPlayerId = '';
 let myProfileImageSrc = document.getElementById('lobby-profile-preview').src;
 let currentGameState = null;
-let isGridLocked = false;
+let isGridLocked = false; 
+let isTtsEnabled = true;
+
+let penaltyTimerId = null;
+
+// 단어 타이핑 애니메이션을 위한 변수
+let wordQueue = []; // 처리할 단어를 담는 큐
+let isTyping = false; // 현재 단어를 타이핑 중인지 여부
 
 // --- DOM Elements ---
 const lobbyContainer = document.getElementById('lobby-container');
@@ -21,6 +28,7 @@ const pokemonGridContainer = document.getElementById('pokemon-grid-container');
 const questionDisplayArea = document.getElementById('question-display-area');
 const pokemonDescriptionText = document.getElementById('pokemon-description');
 const difficultyControls = document.getElementById('difficulty-controls');
+const ttsToggleButton = document.getElementById('tts-toggle-btn');
 
 // --- 이벤트 리스너 통합 관리 ---
 document.addEventListener('click', (event) => {
@@ -29,6 +37,17 @@ document.addEventListener('click', (event) => {
     if (target.id === 'create-room-btn') handleCreateRoom();
     if (target.id === 'join-room-btn') handleJoinRoom();
     if (target.id === 'copy-code-btn') handleCopyCode();
+    
+    if (target.id === 'tts-toggle-btn') {
+        isTtsEnabled = !isTtsEnabled;
+        target.classList.toggle('off', !isTtsEnabled);
+        target.textContent = isTtsEnabled ? '🔊' : '🔇';
+        if (isTtsEnabled && currentGameState && currentGameState.state === 'playing_guessing') {
+            speak(currentGameState.currentPokemon.description, true);
+        } else {
+            window.speechSynthesis.cancel();
+        }
+    }
     
     if (!currentGameState) return;
     const me = currentGameState.players[myPlayerId];
@@ -69,20 +88,26 @@ socket.on('error', ({ message }) => showToast(message, 'error'));
 socket.on('newHost', ({ playerName }) => showToast(`${playerName} 님이 새로운 방장이 되었습니다.`, 'info'));
 socket.on('gameStarted', () => { showToast('퀴즈가 시작됩니다!', 'info'); });
 
-socket.on('guessResult', ({ isCorrect }) => {
-    if (!isCorrect) {
-        const popupContent = `<div class="popup-simple-text">오답입니다!</div>`;
-        showPopup(popupContent, 500); 
-
-        isGridLocked = true;
-        pokemonGridContainer.classList.add('disabled');
-        
-        // [수정] 오답 딜레이 1초로 단축
-        setTimeout(() => {
-            isGridLocked = false;
-            pokemonGridContainer.classList.remove('disabled');
-        }, 1000);
+socket.on('wrongGuessBroadcast', ({ guesserId, guesserName }) => {
+    let delayDuration, popupContent, popupDuration;
+    if (guesserId === myPlayerId) {
+        delayDuration = 3000; popupDuration = 2800;
+        popupContent = `<div class="popup-simple-text">오답입니다! 3초간 멈춥니다.</div>`;
+    } else {
+        delayDuration = 1000; popupDuration = 1000;
+        popupContent = `<div class="popup-simple-text">${guesserName} 님이 오답을 선택했습니다!</div>`;
     }
+    showPopup(popupContent, popupDuration);
+    isGridLocked = true;
+    pokemonGridContainer.classList.add('disabled');
+    if (penaltyTimerId) clearTimeout(penaltyTimerId);
+    penaltyTimerId = setTimeout(() => {
+        isGridLocked = false;
+        if (currentGameState && currentGameState.state === 'playing_guessing') {
+            pokemonGridContainer.classList.remove('disabled');
+        }
+        penaltyTimerId = null;
+    }, delayDuration);
 });
 
 socket.on('updateGameState', (gameState) => {
@@ -91,10 +116,21 @@ socket.on('updateGameState', (gameState) => {
     const newState = gameState.state;
     currentGameState = gameState;
     
+    if (newState === 'playing_guessing' && oldState !== 'playing_guessing') {
+        const description = gameState.currentPokemon.description;
+        speak(description, true);
+    }
+    
     if (oldState === 'playing_guessing' && newState === 'round_end') {
+        window.speechSynthesis.cancel();
+        if (penaltyTimerId) { clearTimeout(penaltyTimerId); penaltyTimerId = null; }
+        isGridLocked = false;
+        pokemonGridContainer.classList.remove('disabled');
+
         const winner = gameState.players[gameState.winnerId];
         const answerPokemon = gameState.currentPokemon;
         if (winner && answerPokemon) {
+            pokemonDescriptionText.textContent = gameState.currentPokemon.description;
             const popupContent = `
                 <div class="popup-content-box" style="border: 4px solid ${winner.color};">
                     <img src="${answerPokemon.image}" alt="${answerPokemon.name}" class="popup-pokemon-image">
@@ -102,22 +138,14 @@ socket.on('updateGameState', (gameState) => {
                     <div class="popup-winner-text">${winner.name} 님이 정답을 맞혔습니다!</div>
                 </div>
             `;
-            showPopup(popupContent, 1500); 
+            showPopup(popupContent, 1500);
         }
     }
     renderAll(gameState);
 });
 
-socket.on('countdownTick', ({ count }) => {
-    showCountdownPopup(count);
-});
-
-function onRoomJoined({ roomCode }) {
-    myRoomCode = roomCode;
-    lobbyContainer.classList.add('hidden');
-    gameContainer.classList.remove('hidden');
-    document.body.classList.remove('in-lobby');
-}
+socket.on('countdownTick', ({ count }) => { showCountdownPopup(count); });
+function onRoomJoined({ roomCode }) { myRoomCode = roomCode; lobbyContainer.classList.add('hidden'); gameContainer.classList.remove('hidden'); document.body.classList.remove('in-lobby'); }
 
 // --- 렌더링 및 게임 흐름 함수 ---
 function renderAll(gameState) {
@@ -130,26 +158,16 @@ function renderAll(gameState) {
 
 function renderTopBarAndQuestion(gameState, me) {
     document.getElementById('player-count-display').textContent = `참가 인원: ${Object.keys(gameState.players).length} / ${gameState.maxPlayers}`;
-    
     const isWaitingHost = me.isHost && gameState.state === 'waiting';
     startGameButton.classList.toggle('hidden', !isWaitingHost);
     difficultyControls.classList.toggle('hidden', !isWaitingHost);
     resetGameButton.classList.toggle('hidden', !me.isHost);
-
     if (isWaitingHost) {
         difficultyControls.querySelectorAll('button').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.difficulty === gameState.difficulty);
         });
     }
-
-    if (gameState.state === 'waiting') {
-        questionDisplayArea.classList.add('hidden');
-    } else {
-        questionDisplayArea.classList.remove('hidden');
-        if (gameState.currentPokemon) {
-            pokemonDescriptionText.textContent = gameState.currentPokemon.description;
-        }
-    }
+    questionDisplayArea.classList.toggle('hidden', gameState.state === 'waiting');
 }
 
 function renderPlayerList(players, gameState) {
@@ -170,14 +188,11 @@ function renderPlayerList(players, gameState) {
 
 function renderPokemonGrid(gameState) {
     pokemonGridContainer.innerHTML = '';
-    
     const difficultyMap = { easy: 2, normal: 3, hard: 4 };
     const gridSize = difficultyMap[gameState.difficulty] || 4;
     const totalPokemons = gridSize * gridSize;
-
     pokemonGridContainer.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
     pokemonGridContainer.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
-
     const { state, gridPokemons, currentPokemon } = gameState;
     for (let i = 0; i < totalPokemons; i++) {
         const box = document.createElement('div');
@@ -185,15 +200,11 @@ function renderPokemonGrid(gameState) {
         const pokemon = gridPokemons[i];
         if (pokemon) {
             const img = document.createElement('img');
-            img.src = pokemon.image;
-            img.alt = pokemon.name;
-            box.appendChild(img);
-            box.dataset.pokemonId = pokemon.id;
+            img.src = pokemon.image; img.alt = pokemon.name;
+            box.appendChild(img); box.dataset.pokemonId = pokemon.id;
         }
         switch(state) {
-            case 'playing_guessing':
-                box.classList.add('guessable');
-                break;
+            case 'playing_guessing': box.classList.add('guessable'); break;
             case 'round_end':
                 if (pokemon && currentPokemon) {
                     if (pokemon.id === currentPokemon.id) box.classList.add('correct-answer');
@@ -206,32 +217,93 @@ function renderPokemonGrid(gameState) {
 }
 
 // --- 유틸리티 함수 ---
+function typeWord(word, onComplete) {
+    let i = 0;
+    const typingInterval = setInterval(() => {
+        if (i < word.length) {
+            pokemonDescriptionText.textContent += word[i];
+            i++;
+        } else {
+            clearInterval(typingInterval);
+            if (onComplete) onComplete();
+        }
+    }, 50);
+}
+
+function processWordQueue() {
+    if (isTyping || wordQueue.length === 0) {
+        return;
+    }
+    isTyping = true;
+    const nextWord = wordQueue.shift();
+    typeWord(nextWord, () => {
+        isTyping = false;
+        processWordQueue();
+    });
+}
+
+function speak(text, loop = false) {
+    if (!isTtsEnabled || typeof window.speechSynthesis === 'undefined') {
+        return;
+    }
+    window.speechSynthesis.cancel();
+    pokemonDescriptionText.textContent = '';
+    wordQueue = [];
+    isTyping = false;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    const koreanVoice = window.speechSynthesis.getVoices().find(voice => voice.lang === 'ko-KR');
+    if (koreanVoice) utterance.voice = koreanVoice;
+    
+    // [핵심 수정] TTS 속도를 기본값인 1배속으로 다시 변경
+    utterance.rate = 1;
+    utterance.pitch = 1;
+
+    let lastWordIndex = 0;
+    utterance.onboundary = (event) => {
+        if (event.name === 'word') {
+            const word = text.substring(lastWordIndex, event.charIndex + event.charLength);
+            lastWordIndex = event.charIndex + event.charLength;
+            
+            wordQueue.push(word);
+            processWordQueue();
+        }
+    };
+    
+    utterance.onend = () => {
+        const remainingText = text.substring(lastWordIndex);
+        if (remainingText) {
+            wordQueue.push(remainingText);
+            processWordQueue();
+        }
+
+        if (loop) {
+            const checkQueue = setInterval(() => {
+                if (wordQueue.length === 0 && !isTyping) {
+                    clearInterval(checkQueue);
+                    if (isTtsEnabled && currentGameState && currentGameState.state === 'playing_guessing') {
+                        speak(text, true);
+                    }
+                }
+            }, 100);
+        }
+    };
+    
+    window.speechSynthesis.speak(utterance);
+}
+
 function showPopup(content, duration) {
     const popup = document.getElementById('game-popup');
     if (!popup) return;
     popup.innerHTML = content;
     popup.classList.remove('hide');
     popup.classList.add('show');
-    setTimeout(() => {
-        popup.classList.remove('show');
-        popup.classList.add('hide');
-    }, duration);
+    setTimeout(() => { popup.classList.remove('show'); popup.classList.add('hide'); }, duration);
 }
 
 function showCountdownPopup(count) {
     const popupContent = `<div class="countdown-circle"><span class="countdown-text">${count}</span></div>`;
-    const popup = document.getElementById('game-popup');
-    if (!popup) return;
-    popup.innerHTML = popupContent;
-    popup.classList.remove('hide');
-    popup.classList.add('show');
-
-    if (count <= 1) {
-        setTimeout(() => {
-            popup.classList.remove('show');
-            popup.classList.add('hide');
-        }, 450); 
-    }
+    showPopup(popupContent, 450);
 }
 
 function showToast(message, type = 'info') { 
@@ -240,8 +312,5 @@ function showToast(message, type = 'info') {
     toast.className = `toast ${type}`; 
     toast.textContent = message; 
     toastContainer.appendChild(toast); 
-    setTimeout(() => { 
-        toast.classList.add('fade-out'); 
-        setTimeout(() => toast.remove(), 500);
-    }, 2500); 
+    setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 500); }, 2500); 
 }
