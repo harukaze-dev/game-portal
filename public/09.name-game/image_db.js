@@ -1,9 +1,9 @@
 // public/09.name-game/image_db.js
 
 // 게임에서 사용할 이미지 목록 데이터베이스
-// 0001.png부터 0559.png까지의 이미지 정보를 생성합니다.
+// 0001.png부터 0616.png까지의 이미지 정보를 생성합니다.
 const imageDB = [];
-for (let i = 1; i <= 559; i++) {
+for (let i = 1; i <= 616; i++) {
     // 숫자를 4자리 문자열로 변환 (예: 1 -> '0001', 123 -> '0123')
     const id = String(i).padStart(4, '0');
     imageDB.push({
