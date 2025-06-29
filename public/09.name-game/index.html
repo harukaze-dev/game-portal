@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>얘의 이름은?</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <!-- [핵심 수정] CSS 파일 링크에 쿼리 문자열을 추가하여 브라우저 캐시를 무시하도록 함 -->
+    <link rel="stylesheet" href="style.css?v=20240702">
+</head>
+<body class="in-lobby">
+    <!-- 각종 알림을 위한 토스트 컨테이너 -->
+    <div id="toast-container"></div>
+    
+    <!-- 전체 앱을 감싸는 래퍼 -->
+    <div id="app-wrapper">
+
+        <!-- 로비 화면 -->
+        <div id="lobby-container" class="lobby-container">
+            <h1>얘의 이름은?</h1>
+            <div class="lobby-step">
+                <h2>닉네임 & 프로필 설정</h2>
+                <div class="lobby-profile-container">
+                    <img id="lobby-profile-preview" src="/assets/default-profile.png" alt="Profile Preview">
+                    <input type="file" id="lobby-profile-input" class="hidden" accept="image/*">
+                    <p>이미지를 클릭하여 변경</p>
+                </div>
+                <input type="text" id="player-name-input" placeholder="사용할 닉네임을 입력하세요 (8자 이내)" maxlength="8">
+            </div>
+            <div id="room-actions" class="hidden">
+                <div class="action-box">
+                    <h3>새로운 게임 시작</h3>
+                    <button id="create-room-btn">방 만들기</button>
+                </div>
+                <div class="action-box">
+                    <h3>초대 코드로 참가</h3>
+                    <input type="password" id="room-code-input" placeholder="초대 코드 입력">
+                    <button id="join-room-btn">참가하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 게임 진행 화면 -->
+        <div id="game-container" class="container hidden">
+            <!-- 상단 정보 바 -->
+            <div id="top-bar">
+                <div class="top-bar-left">
+                    <div id="player-count-display" class="info-box"></div>
+                    <button id="copy-code-btn">방 초대코드 복사</button>
+                </div>
+                <h1 class="top-bar-title">얘의 이름은?</h1>
+                <div class="top-bar-right">
+                    <div id="host-controls">
+                        <button id="start-game-button" class="hidden">게임 시작</button>
+                        <button id="reset-game-button" class="hidden">완전 초기화</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 메인 게임 영역 (플레이어 보드 + 게임 보드) -->
+            <div id="main-game-area">
+                <!-- 플레이어 카드 목록이 표시될 영역 -->
+                <div id="player-board"></div>
+
+                <!-- 게임 보드 (카드 더미/공개 카드, 무덤) -->
+                <div id="game-board-area">
+                    <!-- 카드 더미 또는 공개된 카드가 표시될 영역 -->
+                    <div id="deck-wrapper">
+                        <!-- JS에 의해 카드 뒷면 또는 앞면이 삽입될 곳 -->
+                        <div id="deck-area"></div>
+                        <div id="deck-info-text" class="card-info-text">카드를 뽑아주세요</div>
+                    </div>
+                    
+                    <!-- 무덤 -->
+                    <div id="graveyard-wrapper">
+                        <div id="graveyard" class="card-stack">
+                             <div class="card-back graveyard-card"></div>
+                        </div>
+                        <div id="graveyard-count" class="card-count-text">무덤: 0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 몬스터 이름 지정 또는 정답 알림용 팝업 -->
+    <div id="game-popup"></div>
+
+    <!-- 공용 스크립트 -->
+    <script src="/js/nav.js"></script> 
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- 게임 전용 데이터 및 스크립트 -->
+    <script src="image_db.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>

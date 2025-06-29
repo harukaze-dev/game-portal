@@ -12,9 +12,11 @@ const ledGameLogic = require('./game-logic/led-game.js');
 const textGameLogic = require('./game-logic/text-game.js');
 const indianPokerLogic = require('./game-logic/indian-poker.js');
 const pokemonGameLogic = require('./game-logic/pokemon-game.js');
+const nameGameLogic = require('./game-logic/name-game.js'); // [추가] '얘의 이름은?' 게임 로직
 
-// [추가] 포켓몬 게임에 필요한 데이터를 메인 서버에서 직접 불러옵니다.
+// 각 게임에 필요한 데이터를 메인 서버에서 직접 불러옵니다.
 const { pokemonDB } = require('./public/08.pokemon-game/pokemon_db.js');
+const { imageDB } = require('./public/09.name-game/image_db.js'); // [추가] '얘의 이름은?' 이미지 DB
 
 const app = express();
 const server = http.createServer(app);
@@ -37,6 +39,7 @@ app.get('/05.led-game', (req, res) => { res.sendFile(path.join(__dirname, 'publi
 app.get('/06.text-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', '06.text-game', 'index.html')); });
 app.get('/07.indian-poker', (req, res) => { res.sendFile(path.join(__dirname, 'public', '07.indian-poker', 'index.html')); });
 app.get('/08.pokemon-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', '08.pokemon-game', 'index.html')); });
+app.get('/09.name-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', '09.name-game', 'index.html')); }); // [추가]
 
 
 // ===================================================================
@@ -50,9 +53,10 @@ gridGameLogic(io, generateRoomCode);
 ledGameLogic(io, generateRoomCode);
 textGameLogic(io, generateRoomCode);
 indianPokerLogic(io, generateRoomCode);
-
-// [수정] 포켓몬 게임 로직 실행 시, 불러온 포켓몬 DB 데이터를 인자로 전달합니다.
 pokemonGameLogic(io, generateRoomCode, pokemonDB);
+
+// [추가] '얘의 이름은?' 게임 로직 실행 시, 불러온 이미지 DB 데이터를 인자로 전달합니다.
+nameGameLogic(io, generateRoomCode, imageDB);
 
 
 const PORT = process.env.PORT || 3000;

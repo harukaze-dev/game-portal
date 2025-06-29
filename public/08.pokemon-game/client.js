@@ -8,14 +8,15 @@ let myRoomCode = '';
 let myPlayerId = '';
 let myProfileImageSrc = document.getElementById('lobby-profile-preview').src;
 let currentGameState = null;
-let isGridLocked = false; 
+let isGridLocked = false;
 let isTtsEnabled = true;
 
 let penaltyTimerId = null;
+let typingIntervalId = null; 
 
-// 단어 타이핑 애니메이션을 위한 변수
-let wordQueue = []; // 처리할 단어를 담는 큐
-let isTyping = false; // 현재 단어를 타이핑 중인지 여부
+// [추가] TTS 안정성 강화를 위한 변수
+let voices = []; // 로드된 음성 목록을 저장할 배열
+let areVoicesLoaded = false; // 음성 목록 로드 완료 여부 플래그
 
 // --- DOM Elements ---
 const lobbyContainer = document.getElementById('lobby-container');
@@ -30,6 +31,23 @@ const pokemonDescriptionText = document.getElementById('pokemon-description');
 const difficultyControls = document.getElementById('difficulty-controls');
 const ttsToggleButton = document.getElementById('tts-toggle-btn');
 
+
+// [추가] TTS 음성 목록을 비동기적으로 로드하는 함수
+function loadVoices() {
+    voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+        areVoicesLoaded = true;
+        // console.log("음성 목록 로드 완료:", voices); // 디버깅용 로그
+    }
+}
+
+// [추가] 브라우저가 음성 목록을 준비했을 때 loadVoices 함수를 호출하도록 이벤트 리스너 설정
+// 일부 브라우저는 이 이벤트가 없으면 getVoices()가 빈 배열을 반환합니다.
+window.speechSynthesis.onvoiceschanged = loadVoices;
+// 페이지 로드 시점에도 한 번 호출하여 즉시 로드되는 경우를 처리
+loadVoices();
+
+
 // --- 이벤트 리스너 통합 관리 ---
 document.addEventListener('click', (event) => {
     const target = event.target;
@@ -37,18 +55,19 @@ document.addEventListener('click', (event) => {
     if (target.id === 'create-room-btn') handleCreateRoom();
     if (target.id === 'join-room-btn') handleJoinRoom();
     if (target.id === 'copy-code-btn') handleCopyCode();
-    
+
     if (target.id === 'tts-toggle-btn') {
         isTtsEnabled = !isTtsEnabled;
         target.classList.toggle('off', !isTtsEnabled);
         target.textContent = isTtsEnabled ? '🔊' : '🔇';
+
         if (isTtsEnabled && currentGameState && currentGameState.state === 'playing_guessing') {
             speak(currentGameState.currentPokemon.description, true);
         } else {
             window.speechSynthesis.cancel();
         }
     }
-    
+
     if (!currentGameState) return;
     const me = currentGameState.players[myPlayerId];
     if (!me) return;
@@ -66,7 +85,7 @@ document.addEventListener('click', (event) => {
 
     const imageBox = target.closest('.pokemon-image-box');
     if (isGridLocked || !imageBox || !imageBox.dataset.pokemonId || currentGameState.state !== 'playing_guessing') return;
-    
+
     const pokemonId = parseInt(imageBox.dataset.pokemonId, 10);
     socket.emit('guessPokemon', { roomCode: myRoomCode, pokemonId: pokemonId });
 });
@@ -115,14 +134,20 @@ socket.on('updateGameState', (gameState) => {
     const oldState = currentGameState ? currentGameState.state : null;
     const newState = gameState.state;
     currentGameState = gameState;
-    
+
     if (newState === 'playing_guessing' && oldState !== 'playing_guessing') {
         const description = gameState.currentPokemon.description;
+        startTypingEffect(description);
         speak(description, true);
     }
-    
+
     if (oldState === 'playing_guessing' && newState === 'round_end') {
         window.speechSynthesis.cancel();
+        if (typingIntervalId) {
+            clearInterval(typingIntervalId);
+            typingIntervalId = null;
+        }
+
         if (penaltyTimerId) { clearTimeout(penaltyTimerId); penaltyTimerId = null; }
         isGridLocked = false;
         pokemonGridContainer.classList.remove('disabled');
@@ -143,6 +168,7 @@ socket.on('updateGameState', (gameState) => {
     }
     renderAll(gameState);
 });
+
 
 socket.on('countdownTick', ({ count }) => { showCountdownPopup(count); });
 function onRoomJoined({ roomCode }) { myRoomCode = roomCode; lobbyContainer.classList.add('hidden'); gameContainer.classList.remove('hidden'); document.body.classList.remove('in-lobby'); }
@@ -217,78 +243,56 @@ function renderPokemonGrid(gameState) {
 }
 
 // --- 유틸리티 함수 ---
-function typeWord(word, onComplete) {
-    let i = 0;
-    const typingInterval = setInterval(() => {
-        if (i < word.length) {
-            pokemonDescriptionText.textContent += word[i];
-            i++;
+function startTypingEffect(text) {
+    if (typingIntervalId) {
+        clearInterval(typingIntervalId);
+    }
+    pokemonDescriptionText.textContent = '';
+    let charIndex = 0;
+
+    typingIntervalId = setInterval(() => {
+        if (charIndex < text.length) {
+            pokemonDescriptionText.textContent += text[charIndex];
+            charIndex++;
         } else {
-            clearInterval(typingInterval);
-            if (onComplete) onComplete();
+            clearInterval(typingIntervalId);
+            typingIntervalId = null;
         }
     }, 50);
 }
 
-function processWordQueue() {
-    if (isTyping || wordQueue.length === 0) {
-        return;
-    }
-    isTyping = true;
-    const nextWord = wordQueue.shift();
-    typeWord(nextWord, () => {
-        isTyping = false;
-        processWordQueue();
-    });
-}
-
+// [수정] 음성 목록 로딩을 고려하여 수정한 speak 함수
 function speak(text, loop = false) {
     if (!isTtsEnabled || typeof window.speechSynthesis === 'undefined') {
         return;
     }
+    
+    // [추가] 음성 목록이 아직 로드되지 않았다면, 0.1초 후에 다시 시도.
+    // 이는 비동기 로딩 문제를 해결하기 위한 안전 장치입니다.
+    if (!areVoicesLoaded) {
+        setTimeout(() => speak(text, loop), 100);
+        return;
+    }
+
     window.speechSynthesis.cancel();
-    pokemonDescriptionText.textContent = '';
-    wordQueue = [];
-    isTyping = false;
 
     const utterance = new SpeechSynthesisUtterance(text);
-    const koreanVoice = window.speechSynthesis.getVoices().find(voice => voice.lang === 'ko-KR');
-    if (koreanVoice) utterance.voice = koreanVoice;
     
-    // [핵심 수정] TTS 속도를 기본값인 1배속으로 다시 변경
+    // [수정] 미리 로드된 'voices' 배열에서 한국어 음성을 찾습니다.
+    const koreanVoice = voices.find(voice => voice.lang === 'ko-KR');
+    if (koreanVoice) {
+        utterance.voice = koreanVoice;
+    }
+
     utterance.rate = 1;
     utterance.pitch = 1;
 
-    let lastWordIndex = 0;
-    utterance.onboundary = (event) => {
-        if (event.name === 'word') {
-            const word = text.substring(lastWordIndex, event.charIndex + event.charLength);
-            lastWordIndex = event.charIndex + event.charLength;
-            
-            wordQueue.push(word);
-            processWordQueue();
-        }
-    };
-    
     utterance.onend = () => {
-        const remainingText = text.substring(lastWordIndex);
-        if (remainingText) {
-            wordQueue.push(remainingText);
-            processWordQueue();
-        }
-
-        if (loop) {
-            const checkQueue = setInterval(() => {
-                if (wordQueue.length === 0 && !isTyping) {
-                    clearInterval(checkQueue);
-                    if (isTtsEnabled && currentGameState && currentGameState.state === 'playing_guessing') {
-                        speak(text, true);
-                    }
-                }
-            }, 100);
+        if (loop && isTtsEnabled && currentGameState && currentGameState.state === 'playing_guessing') {
+            setTimeout(() => speak(text, true), 100);
         }
     };
-    
+
     window.speechSynthesis.speak(utterance);
 }
 
@@ -306,11 +310,11 @@ function showCountdownPopup(count) {
     showPopup(popupContent, 450);
 }
 
-function showToast(message, type = 'info') { 
-    const toastContainer = document.getElementById('toast-container'); 
-    const toast = document.createElement('div'); 
-    toast.className = `toast ${type}`; 
-    toast.textContent = message; 
-    toastContainer.appendChild(toast); 
-    setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 500); }, 2500); 
+function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
+    setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 500); }, 2500);
 }
