@@ -41,6 +41,10 @@ app.get('/07.indian-poker', (req, res) => { res.sendFile(path.join(__dirname, 'p
 app.get('/08.pokemon-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', '08.pokemon-game', 'index.html')); });
 app.get('/09.name-game', (req, res) => { res.sendFile(path.join(__dirname, 'public', '09.name-game', 'index.html')); }); // [추가]
 
+// === 헬스 체크 엔드포인트 추가 (UptimeRobot 용) ===
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
 
 // ===================================================================
 // --- 각 게임 네임스페이스 로직 실행 ---
